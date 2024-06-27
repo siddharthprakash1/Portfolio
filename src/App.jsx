@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, useScroll } from "framer-motion";
 import About from "./components/About";
 import Contact from "./components/Contact";
 import Experience from "./components/Experience";
@@ -10,6 +11,7 @@ import LoadingScreen from './components/LoadingScreen';
 
 export const App = () => {
   const [loading, setLoading] = useState(true);
+  const { scrollYProgress } = useScroll();
 
   useEffect(() => {
     // Simulating a delay for demonstration purposes
@@ -22,6 +24,10 @@ export const App = () => {
 
   return (
     <div className="overflow-x-hidden text-neutral-300 antialiased selection:bg-cyan-300 selection:text-cyan-900">
+      <motion.div
+        className="fixed top-0 left-0 right-0 h-2 bg-purple-800 origin-left"
+        style={{ scaleX: scrollYProgress }}
+      />
       {loading ? (
         <LoadingScreen />
       ) : (
@@ -38,7 +44,6 @@ export const App = () => {
             <Experience />
             <Projects />
             <Contact />
-            
           </div>
         </>
       )}
