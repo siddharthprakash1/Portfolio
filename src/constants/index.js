@@ -6,6 +6,7 @@ import project5 from "../assets/projects/gifmaker_me.gif";
 import project6 from "../assets/projects/dcgan.gif";
 import project7 from "../assets/projects/meta-ollama-llama3.png";
 import project8 from "../assets/projects/gif2.gif";
+import project9 from "../assets/projects/Llama-3.jpg";
 
 export const HERO_CONTENT = `A driven and versatile computer science engineering student with a diverse skill set spanning machine learning, data analytics, full-stack web development, and cloud technologies. Adept in Python, React, Node.js, and AWS, with hands-on experience in developing innovative projects such as facial recognition systems and sports analytics using Monte Carlo simulations. Committed to delivering impactful solutions through a combination of technical expertise, problem-solving abilities, and a passion for continuous learning. Seeking challenging opportunities to apply my skills and contribute to cutting-edge technological advancements.`;
 
@@ -101,6 +102,14 @@ export const PROJECTS = [
       "This is a project designed to create a multi-functional AI agent capable of reading and understanding API documentation and generating code based on user prompts. This project utilizes various components including the Llama Index, Ollama models, Pydantic for output parsing, and more.",
     technologies: ["Llama Index", " Ollama", "Pydantic", "Vector Embeddings", "Prompt Enginering", "Mistral", "Codellama", "Local llm"],
   },
+  {
+    title: "VoiceVision AI: Interactive Voice Assistant with Webcam",
+    image: project9, // Replace with the correct image reference
+    description:
+      "This project implements an AI voice assistant that integrates speech recognition, text-to-speech, and webcam feed. Powered by the Llama 3 language model via Ollama, it provides AI-powered responses and manages conversation history with LangChain.",
+    technologies: ["Python", "OpenCV", "pyttsx3", "SpeechRecognition", "LangChain", "Ollama", "python-dotenv"],
+  }
+  
 ];
 
 export const CONTACT = {
