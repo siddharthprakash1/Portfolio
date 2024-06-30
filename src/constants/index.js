@@ -38,55 +38,52 @@ export const EXPERIENCES = [
 
 export const PROJECTS = [
   {
-    title: "AiDepthVision",
+    title: "DepthVision Pro: Real-Time 3D Mapping",
     image: project4,
     description:
-      "This project uses the MiDaS depth estimation model to create real-time depth maps from a webcam feed. ",
-    technologies: ["PyTorch", "OpenCV", "Matplotlib","Numpy","Imageio"],
+      "Experience advanced depth mapping with AiDepthVision, utilizing the MiDaS model to generate real-time depth maps from a webcam feed.",
+    technologies: ["PyTorch", "OpenCV", "Matplotlib", "Numpy", "Imageio"],
   },
-
   {
-    title: "PathFinderVisualization",
+    title: "AlgoNavigator: Pathfinding Algorithm Visualizer",
     image: project2,
     description:
-      "This project is a React-based visualization tool for pathfinding algorithms. It supports Dijkstra's Algorithm and A* Algorithm, allowing users to visualize the steps taken by these algorithms to find the shortest path between two points on a grid.",
-    technologies: ["React", "Css", "Dsa","Html","JavaScript"],
+      "Visualize complex pathfinding algorithms with PathFinderVisualization. Supports Dijkstra's and A* Algorithms to find the shortest path on a grid, built with React.",
+    technologies: ["React", "Css", "Dsa", "Html", "JavaScript"],
   },
   {
-    title: "Image Generation of Numbers Using MNIST Dataset and DCGAN",
+    title: "NumGen DCGAN: Handwritten Digit Synthesis",
     image: project6,
     description:
-      "Deep Convolutional Generative Adversarial Networks (DCGAN) for generating handwritten digit images on the MNIST dataset, with Jupyter Notebooks for data loading, model building, training, and visualization.",
-      technologies: ["Python", "TensorFlow", "NumPy", "Matplotlib"]
+      "Generate realistic handwritten digits using Deep Convolutional Generative Adversarial Networks (DCGAN) on the MNIST dataset. Includes data loading, model building, training, and visualization in Jupyter Notebooks.",
+    technologies: ["Python", "TensorFlow", "NumPy", "Matplotlib"],
   },
   {
-    title: "MLTrader: A Machine Learning Trading Bot",
+    title: "MLTrader Pro: Intelligent Financial Trading Bot",
     image: project5,
     description:
-      "MLTrader: An automated trading bot that executes trades with SPY ETF based on sentiment analysis of financial news using FinBERT and Alpaca APIs.",
-      technologies: ["FinBERT", "Alpaca Trade API", "Yahoo Finance API", "TensorFlow", "Pandas"],
+      "MLTrader automates trades with the SPY ETF using sentiment analysis of financial news via FinBERT and Alpaca APIs for informed decision-making.",
+    technologies: ["FinBERT", "Alpaca Trade API", "Yahoo Finance API", "TensorFlow", "Pandas"],
   },
   {
-    title: "Gym Equipment Identifier & Exercise Recommender",
+    title: "GymGenie: Intelligent Equipment Identifier & Exercise Recommender",
     image: project3,
     description:
-      " A system that utilizes a CNN model to identify gym equipment with 92% accuracy and recommends personalized exercise routines based on the identified equipment.",
+      "Identify gym equipment with 92% accuracy using a CNN model and receive personalized exercise recommendations based on the identified equipment.",
     technologies: ["TensorFlow", "Manim", "Numpy", "Pandas"],
   },
   {
-    title: "ShadowSpeak",
+    title: "ShadowSpeak: Real-Time Anonymous Chat Platform",
     image: project8,
     description:
-      "This is a real-time chat application built using Socket.IO for WebSocket communication. It allows multiple clients to connect simultaneously and exchange messages instantly.Here People can freely talk and express their feelings eihter anonymously or by showing their name.",
+      "Engage in instant messaging with ShadowSpeak, a real-time chat application built with Socket.IO. Chat anonymously or with your name visible.",
     technologies: ["JavaScript", "SocketIO", "Moment.js", "DOM api"],
   },
-
-
   {
-    title: "Image Classification",
+    title: "CIFAR-Classify: Advanced Image Recognition",
     image: project1,
     description:
-      "Using ANN and CNN on the CIFAR-10 dataset achieved percision of 59% and 80%.",
+      "Achieve high precision in image classification with CIFAR-Classify using ANN and CNN models on the CIFAR-10 dataset, reaching up to 80% accuracy.",
     technologies: ["JupyterNotebook", "Hugging Face", "Bert"],
   },
   {
@@ -94,7 +91,7 @@ export const PROJECTS = [
     image: project7,
     description:
       "This is a project designed to create a multi-functional AI agent capable of reading and understanding API documentation and generating code based on user prompts. This project utilizes various components including the Llama Index, Ollama models, Pydantic for output parsing, and more.",
-    technologies: ["Llama Index", " Ollama", "Pydantic","Vector Embeddings","Prompt Enginering"," Mistral","Codellama","Local llm"],
+    technologies: ["Llama Index", " Ollama", "Pydantic", "Vector Embeddings", "Prompt Enginering", "Mistral", "Codellama", "Local llm"],
   },
 ];
 
