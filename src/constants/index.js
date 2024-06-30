@@ -34,6 +34,14 @@ export const EXPERIENCES = [
     description: ` I collaborated with my team to develop advanced machine learning models for football match prediction and strategy optimization using extensive data analysis and Monte Carlo simulations`,
     technologies: ["Python", "Numpy", "Pandas", "Canva"],
   },
+  {
+    year: "June - August 2024",
+    role: "Freelance Web Developer",
+    company: "Trekzo Resources Private Limited",
+    description: `Developing and optimizing the landing page for Trekzo Resources. Implementing SEO strategies and managing Google Ads campaigns to enhance the page's visibility and ranking on Google search results.`,
+    technologies: ["Bootstrap", "CSS", "HTML"],
+  }
+  
 ];
 
 export const PROJECTS = [
