@@ -4,7 +4,7 @@ import project3 from "../assets/projects/gym.png";
 import project4 from "../assets/projects/depth_capture.gif";
 import project5 from "../assets/projects/gifmaker_me.gif";
 import project6 from "../assets/projects/dcgan.gif";
-import project7 from "../assets/projects/weather.png";
+import project7 from "../assets/projects/meta-ollama-llama3.png";
 import project8 from "../assets/projects/gif2.gif";
 
 export const HERO_CONTENT = `A driven and versatile computer science engineering student with a diverse skill set spanning machine learning, data analytics, full-stack web development, and cloud technologies. Adept in Python, React, Node.js, and AWS, with hands-on experience in developing innovative projects such as facial recognition systems and sports analytics using Monte Carlo simulations. Committed to delivering impactful solutions through a combination of technical expertise, problem-solving abilities, and a passion for continuous learning. Seeking challenging opportunities to apply my skills and contribute to cutting-edge technological advancements.`;
@@ -50,7 +50,7 @@ export const PROJECTS = [
     image: project2,
     description:
       "This project is a React-based visualization tool for pathfinding algorithms. It supports Dijkstra's Algorithm and A* Algorithm, allowing users to visualize the steps taken by these algorithms to find the shortest path between two points on a grid.",
-    technologies: ["JupyterNotebook", "Hugging Face", "Bert"],
+    technologies: ["React", "Css", "Dsa","Html","JavaScript"],
   },
   {
     title: "Image Generation of Numbers Using MNIST Dataset and DCGAN",
@@ -77,8 +77,8 @@ export const PROJECTS = [
     title: "ShadowSpeak",
     image: project8,
     description:
-      " A system that utilizes a CNN model to identify gym equipment with 92% accuracy and recommends personalized exercise routines based on the identified equipment.",
-    technologies: ["TensorFlow", "Manim", "Numpy", "Pandas"],
+      "This is a real-time chat application built using Socket.IO for WebSocket communication. It allows multiple clients to connect simultaneously and exchange messages instantly.Here People can freely talk and express their feelings eihter anonymously or by showing their name.",
+    technologies: ["JavaScript", "SocketIO", "Moment.js", "DOM api"],
   },
 
 
@@ -90,11 +90,11 @@ export const PROJECTS = [
     technologies: ["JupyterNotebook", "Hugging Face", "Bert"],
   },
   {
-    title: "Weather App",
+    title: "CodeGen Pro: Intelligent Code Generation Agent",
     image: project7,
     description:
-      " A weather app that provides current weather conditions for a specified city using API data.It has Search functionality, error handling, weather details including temperature, humidity, wind speed, and weather icon.",
-    technologies: ["OpenWeatherMap API", "HTML", "CSS"],
+      "This is a project designed to create a multi-functional AI agent capable of reading and understanding API documentation and generating code based on user prompts. This project utilizes various components including the Llama Index, Ollama models, Pydantic for output parsing, and more.",
+    technologies: ["Llama Index", " Ollama", "Pydantic","Vector Embeddings","Prompt Enginering"," Mistral","Codellama","Local llm"],
   },
 ];
 
