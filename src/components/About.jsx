@@ -1,7 +1,7 @@
 import aboutImg from "../assets/abtme.jpg";
 import { ABOUT_TEXT } from "../constants";
 import { motion } from "framer-motion";
-import resumeFile from "../assets/resume.pdf"; // Import your resume file
+import resumeFile from "../assets/SiddharthPrakash.pdf"; // Import your resume file
 
 const About = () => {
   const handleResumeDownload = () => {
