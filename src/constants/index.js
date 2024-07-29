@@ -108,7 +108,7 @@ export const PROJECTS = [
     title: "LLaMA3-70B Powered AI Content Curator for X in GenAI, LangChain, and CrewAI",
     image: project1,
     description:
-      "Achieve high precision in image classification with CIFAR-Classify using ANN and CNN models on the CIFAR-10 dataset, reaching up to 80% accuracy.",
+      " This advanced system leverages the powerful LLaMA3-70B model through the Groq API to discover, analyze, and share cutting-edge content in Generative AI, LangChain, and CrewAI. Stay updated with the latest developments by following our curator bot @AiBuzzDaily on X (formerly Twitter).",
     technologies: ["Groq", "Serper", "CrewAI","LLaMa3-70B"],
   },
   
