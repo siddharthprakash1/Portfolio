@@ -105,11 +105,11 @@ export const PROJECTS = [
     technologies: ["JavaScript", "SocketIO", "Moment.js", "DOM api"],
   },
   {
-    title: "CIFAR-Classify: Advanced Image Recognition",
+    title: "LLaMA3-70B Powered AI Content Curator for X in GenAI, LangChain, and CrewAI",
     image: project1,
     description:
       "Achieve high precision in image classification with CIFAR-Classify using ANN and CNN models on the CIFAR-10 dataset, reaching up to 80% accuracy.",
-    technologies: ["JupyterNotebook", "Hugging Face", "Bert"],
+    technologies: ["Groq", "Serper", "CrewAI","LLaMa3-70B"],
   },
   
 ];
