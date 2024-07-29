@@ -47,6 +47,22 @@ export const EXPERIENCES = [
 
 export const PROJECTS = [
   {
+    title: "CodeGen Pro: Intelligent Code Generation Agent",
+    image: project7,
+    description:
+      "This is a project designed to create a multi-functional AI agent capable of reading and understanding API documentation and generating code based on user prompts. This project utilizes various components including the Llama Index, Ollama models, Pydantic for output parsing, and more.",
+    technologies: ["Llama Index", " Ollama", "Pydantic", "Vector Embeddings", "Prompt Enginering", "Mistral", "Codellama", "Local llm"],
+  },
+
+  {
+    title: "VoiceVision AI: Interactive Voice Assistant with Webcam",
+    image: project9, // Replace with the correct image reference
+    description:
+      "This project implements an AI voice assistant that integrates speech recognition, text-to-speech, and webcam feed. Powered by the Llama 3 language model via Ollama, it provides AI-powered responses and manages conversation history with LangChain.",
+    technologies: ["Python", "OpenCV", "pyttsx3", "SpeechRecognition", "LangChain", "Ollama", "python-dotenv"],
+  },
+
+  {
     title: "DepthVision Pro: Real-Time 3D Mapping",
     image: project4,
     description:
@@ -95,20 +111,6 @@ export const PROJECTS = [
       "Achieve high precision in image classification with CIFAR-Classify using ANN and CNN models on the CIFAR-10 dataset, reaching up to 80% accuracy.",
     technologies: ["JupyterNotebook", "Hugging Face", "Bert"],
   },
-  {
-    title: "CodeGen Pro: Intelligent Code Generation Agent",
-    image: project7,
-    description:
-      "This is a project designed to create a multi-functional AI agent capable of reading and understanding API documentation and generating code based on user prompts. This project utilizes various components including the Llama Index, Ollama models, Pydantic for output parsing, and more.",
-    technologies: ["Llama Index", " Ollama", "Pydantic", "Vector Embeddings", "Prompt Enginering", "Mistral", "Codellama", "Local llm"],
-  },
-  {
-    title: "VoiceVision AI: Interactive Voice Assistant with Webcam",
-    image: project9, // Replace with the correct image reference
-    description:
-      "This project implements an AI voice assistant that integrates speech recognition, text-to-speech, and webcam feed. Powered by the Llama 3 language model via Ollama, it provides AI-powered responses and manages conversation history with LangChain.",
-    technologies: ["Python", "OpenCV", "pyttsx3", "SpeechRecognition", "LangChain", "Ollama", "python-dotenv"],
-  }
   
 ];
 
