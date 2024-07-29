@@ -1,4 +1,4 @@
-import project1 from "../assets/projects/cifar.jpg";
+import project1 from "../assets/projects/Llama-3.1.jpg";
 import project2 from "../assets/projects/compressed.gif";
 import project3 from "../assets/projects/gym.png";
 import project4 from "../assets/projects/depth_capture.gif";
