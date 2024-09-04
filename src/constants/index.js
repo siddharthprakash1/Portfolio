@@ -47,6 +47,13 @@ export const EXPERIENCES = [
 
 export const PROJECTS = [
   {
+    title: "LLaMA3-70B Powered AI Content Curator for X in GenAI, LangChain, and CrewAI",
+    image: project1,
+    description:
+      " This advanced system leverages the powerful LLaMA3-70B model through the Groq API to discover, analyze, and share cutting-edge content in Generative AI, LangChain, and CrewAI. Stay updated with the latest developments by following our curator bot @AiBuzzDaily on X (formerly Twitter).",
+    technologies: ["Groq", "Serper", "CrewAI","LLaMa3-70B"],
+  },
+  {
     title: "CodeGen Pro: Intelligent Code Generation Agent",
     image: project7,
     description:
@@ -104,13 +111,7 @@ export const PROJECTS = [
       "Engage in instant messaging with ShadowSpeak, a real-time chat application built with Socket.IO. Chat anonymously or with your name visible.",
     technologies: ["JavaScript", "SocketIO", "Moment.js", "DOM api"],
   },
-  {
-    title: "LLaMA3-70B Powered AI Content Curator for X in GenAI, LangChain, and CrewAI",
-    image: project1,
-    description:
-      " This advanced system leverages the powerful LLaMA3-70B model through the Groq API to discover, analyze, and share cutting-edge content in Generative AI, LangChain, and CrewAI. Stay updated with the latest developments by following our curator bot @AiBuzzDaily on X (formerly Twitter).",
-    technologies: ["Groq", "Serper", "CrewAI","LLaMa3-70B"],
-  },
+
   
 ];
 
