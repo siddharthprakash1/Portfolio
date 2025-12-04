@@ -8,115 +8,150 @@ import project7 from "../assets/projects/meta-ollama-llama3.png";
 import project8 from "../assets/projects/gif2.gif";
 import project9 from "../assets/projects/Llama-3.jpg";
 
-export const HERO_CONTENT = `A driven and versatile computer science engineering student with a diverse skill set spanning Gen AI ,Machine Learning, Data Analytics, full-stack web development and cloud technologies. Adept in Python, Langchain, Crewai, Tensorflow, Pytorch, React, Node.js, and AWS, with hands-on experience in developing innovative projects such as LLM powered (Twitter)X bots and voice assistants using llama3.1-70b model. Committed to delivering impactful solutions through a combination of technical expertise, problem-solving abilities, and a passion for continuous learning. Seeking challenging opportunities to apply my skills and contribute to cutting-edge technological advancements.`;
+export const HERO_CONTENT = `Software Engineer specializing in AI-as-a-Service, building scalable agentic workflows and intelligent systems. Previously at Keysight Technologies where I filed an IP and automated 471+ protocol attributes. Passionate about LLMs, RAG pipelines, and production-grade AI solutions.`;
 
-export const ABOUT_TEXT = `Motivated computer science engineering student adept in machine learning, data analytics, and full-stack web development. Proficient in Python, OpenCV, React, Node.js, and AWS, with a proven track record of developing impactful projects like facial recognition systems and sports analytics using Monte Carlo simulations. A natural problem-solver with strong analytical and technical skills. Beyond academics, I pursue photography professionally, capturing the world through my lens, and enjoy an active lifestyle playing badminton and hitting the gym regularly.`;
+export const ABOUT_TEXT = `Software Engineer at Couchbase working on AI-as-a-Service systems. I build scalable agentic workflows, internal tools, and automation pipelines. My experience spans from R&D at Keysight Technologies (where I filed an IP) to building AI-powered analysis systems and intelligent recommendation engines. I graduated from PES University with a B.Tech in Computer Science and have worked extensively with LangChain, CrewAI, and various LLM frameworks. Beyond engineering, I'm a professional photographer and have led sponsorship teams procuring 10+ lakhs for college events.`;
 
 export const EXPERIENCES = [
-
   {
-    year: "Jun-July 2023",
-    role: "Ai Intern",
+    year: "Oct 2024 - Present",
+    role: "Software Engineer",
+    company: "Couchbase (AI-as-a-Service Team)",
+    description: `Working on AI-as-a-Service systems enabling scalable agentic workflows. Building internal tools and automation pipelines to improve developer productivity. Collaborating with cross-functional AI and platform teams to ship production-grade features.`,
+    technologies: ["AI/ML", "LangChain", "Python", "Agentic Systems", "Cloud", "NoSQL"],
+    current: true,
+  },
+  {
+    year: "Aug 2024 - Oct 2024",
+    role: "Software Engineer",
+    company: "Keysight Technologies",
+    description: `Converted from R&D Intern to Full-Time Engineer based on performance. Continued development on AI-driven analysis systems and protocol automation tools. Collaborated with CSG Wireline NT and Services team on L2 & L3 protocol workflows.`,
+    technologies: ["Python", "AI Systems", "Protocol Analysis", "Automation", "Networking"],
+  },
+  {
+    year: "Feb 2024 - Jun 2024",
+    role: "R&D Intern",
+    company: "Keysight Technologies",
+    description: `Built innovative AI-powered analysis systems and intelligent recommendation engines; filed an IP (intellectual property). Automated 471+ attributes across multiple networking protocols. Built a custom Wireshark dissector for L2 & L3 protocols.`,
+    technologies: ["Python", "Wireshark", "AI/ML", "Networking Protocols", "IP Filing"],
+  },
+  {
+    year: "Jun - Aug 2023",
+    role: "Project Research Associate",
+    company: "Sports Technology and Analytics Research Centre",
+    description: `Combined Monte Carlo simulations and ML models to predict football match outcomes. Analyzed data from 25,000+ matches and 10,000 players. Built a user interface for interactive data exploration.`,
+    technologies: ["Python", "Machine Learning", "Monte Carlo", "Data Analysis", "UI Development"],
+  },
+  {
+    year: "Jun - Jul 2023",
+    role: "AI Intern",
     company: "LogoJech Technologies",
-    description: `During my internship at LogoJech Technologies, I implemented advanced AI-driven facial recognition systems, integrating them with AWS for efficient data management.`,
-    technologies: ["Python", "OpenCV", "dlib", "AWS DynamoDB", "Android"],
+    description: `Revamped a facial recognition system using OpenCV and dlib, reducing memory usage by 20%. Integrated model with AWS DynamoDB and implemented face-liveliness detection for Android, improving security by 40%.`,
+    technologies: ["Python", "OpenCV", "dlib", "AWS DynamoDB", "Android", "Agile"],
   },
-  {
-    year: "Apr-May 2023",
-    role: "Marketing Intern",
-    company: "Sahai",
-    description: ` I achieved significant social media growth by optimizing hashtags on Instagram and developing a LinkedIn strategy that increased website traffic by 20%.`,
-    technologies: ["Instagram", "LinkedIn", "SEO", "Analytics"],
-  },
-  {
-    year: "June-Aug 2023",
-    role: " Project Research Associate",
-    company: "Sports Technology And Analytics Research Centre (STARC)",
-    description: ` I collaborated with my team to develop advanced machine learning models for football match prediction and strategy optimization using extensive data analysis and Monte Carlo simulations`,
-    technologies: ["Python", "Numpy", "Pandas", "Canva"],
-  },
-  {
-    year: "June - August 2024",
-    role: "Freelance Web Developer",
-    company: "Trekzo Resources Private Limited",
-    description: `Developing and optimizing the landing page for Trekzo Resources. Implementing SEO strategies and managing Google Ads campaigns to enhance the page's visibility and ranking on Google search results.`,
-    technologies: ["Bootstrap", "CSS", "HTML"],
-  }
-  
 ];
 
 export const PROJECTS = [
   {
-    title: "LLaMA3-70B Powered AI Content Curator for X in GenAI, LangChain, and CrewAI",
+    title: "LLaMA3.1-70B AI Content Curator for X",
     image: project1,
     description:
-      " This advanced system leverages the powerful LLaMA3-70B model through the Groq API to discover, analyze, and share cutting-edge content in Generative AI, LangChain, and CrewAI. Stay updated with the latest developments by following our curator bot @AiBuzzDaily on X (formerly Twitter).",
-    technologies: ["Groq", "Serper", "CrewAI","LLaMa3-70B"],
+      "Advanced AI content curation system using LLaMA3-70B via Groq API. Bot discovers, analyzes, and shares the latest in GenAI, LangChain, and CrewAI on X. Features 3 specialized agents powered by CrewAI doing 5 tweets at a time.",
+    technologies: ["LLaMA3-70B", "Groq API", "CrewAI", "LangChain", "Multi-Agent"],
+    link: "https://github.com/siddharthprakash1"
   },
   {
-    title: "CodeGen Pro: Intelligent Code Generation Agent",
+    title: "Neural Nexus: LLM Tournament Framework",
     image: project7,
     description:
-      "This is a project designed to create a multi-functional AI agent capable of reading and understanding API documentation and generating code based on user prompts. This project utilizes various components including the Llama Index, Ollama models, Pydantic for output parsing, and more.",
-    technologies: ["Llama Index", " Ollama", "Pydantic", "Vector Embeddings", "Prompt Enginering", "Mistral", "Codellama", "Local llm"],
+      "Strategic battle system pitting different LLMs against each other in Othello/Reversi. Achieved 95% uptime across 1,000+ test games with 8 model configurations. Reduced failed API calls by 40% with exponential backoff error handling.",
+    technologies: ["Groq", "Google AI", "Claude", "Game Engine", "API Integration"],
+    link: "https://github.com/siddharthprakash1"
   },
-
   {
-    title: "VoiceVision AI: Interactive Voice Assistant with Webcam",
-    image: project9, // Replace with the correct image reference
+    title: "Gemini-Inbox: Intelligent Gmail Assistant",
+    image: project9,
     description:
-      "This project implements an AI voice assistant that integrates speech recognition, text-to-speech, and webcam feed. Powered by the Llama 3 language model via Ollama, it provides AI-powered responses and manages conversation history with LangChain.",
-    technologies: ["Python", "OpenCV", "pyttsx3", "SpeechRecognition", "LangChain", "Ollama", "python-dotenv"],
+      "AI-powered Gmail assistant using LangChain and Google's Gemini Pro for automated email management. Features robust error handling, rate limiting, Gmail API integration, and web search via Google Serper API.",
+    technologies: ["LangChain", "Gemini Pro", "Gmail API", "Serper API", "Python"],
+    link: "https://github.com/siddharthprakash1"
   },
-
   {
-    title: "DepthVision Pro: Real-Time 3D Mapping",
+    title: "Crypto Insights Dashboard",
     image: project4,
     description:
-      "Experience advanced depth mapping with AiDepthVision, utilizing the MiDaS model to generate real-time depth maps from a webcam feed.",
-    technologies: ["PyTorch", "OpenCV", "Matplotlib", "Numpy", "Imageio"],
+      "Cryptocurrency analysis platform integrating 3 major APIs with Flask backend. Achieves 5-minute refresh rates, tracks 100+ cryptocurrencies. AI-powered sentiment analysis processes 1000+ daily news articles with 85% classification accuracy.",
+    technologies: ["Flask", "Gemini Pro", "CryptoCompare API", "Sentiment Analysis", "Real-time"],
+    link: "https://github.com/siddharthprakash1"
   },
   {
-    title: "AlgoNavigator: Pathfinding Algorithm Visualizer",
-    image: project2,
-    description:
-      "Visualize complex pathfinding algorithms with PathFinderVisualization. Supports Dijkstra's and A* Algorithms to find the shortest path on a grid, built with React.",
-    technologies: ["React", "Css", "Dsa", "Html", "JavaScript"],
-  },
-  {
-    title: "NumGen DCGAN: Handwritten Digit Synthesis",
-    image: project6,
-    description:
-      "Generate realistic handwritten digits using Deep Convolutional Generative Adversarial Networks (DCGAN) on the MNIST dataset. Includes data loading, model building, training, and visualization in Jupyter Notebooks.",
-    technologies: ["Python", "TensorFlow", "NumPy", "Matplotlib"],
-  },
-  {
-    title: "MLTrader Pro: Intelligent Financial Trading Bot",
+    title: "MLTrader: AI Trading Bot",
     image: project5,
     description:
-      "MLTrader automates trades with the SPY ETF using sentiment analysis of financial news via FinBERT and Alpaca APIs for informed decision-making.",
-    technologies: ["FinBERT", "Alpaca Trade API", "Yahoo Finance API", "TensorFlow", "Pandas"],
+      "Automated trading bot using FinBERT for sentiment analysis. Executes trades on Alpaca and backtests strategies with Yahoo Finance. Improved trading accuracy by 40% through ML-driven decisions.",
+    technologies: ["FinBERT", "Alpaca API", "Yahoo Finance", "Sentiment Analysis", "Trading"],
+    link: "https://github.com/siddharthprakash1"
   },
   {
-    title: "GymGenie: Intelligent Equipment Identifier & Exercise Recommender",
+    title: "AlgoNavigator: Pathfinding Visualizer",
+    image: project2,
+    description:
+      "Interactive visualization tool for pathfinding algorithms. Supports Dijkstra's and A* with real-time animation, custom obstacles, and performance metrics comparison.",
+    technologies: ["React", "Algorithms", "Data Structures", "Visualization", "JavaScript"],
+    link: "https://github.com/siddharthprakash1"
+  },
+  {
+    title: "NumGen DCGAN: Digit Synthesis",
+    image: project6,
+    description:
+      "Deep Convolutional GAN trained on MNIST for generating realistic handwritten digits. Complete pipeline from data preprocessing to model training and evaluation.",
+    technologies: ["TensorFlow", "DCGAN", "Deep Learning", "Computer Vision", "Python"],
+    link: "https://github.com/siddharthprakash1"
+  },
+  {
+    title: "GymGenie: Equipment Identifier",
     image: project3,
     description:
-      "Identify gym equipment with 92% accuracy using a CNN model and receive personalized exercise recommendations based on the identified equipment.",
-    technologies: ["TensorFlow", "Manim", "Numpy", "Pandas"],
+      "CNN-based gym equipment recognition system achieving 92% accuracy. Provides personalized exercise recommendations based on identified equipment.",
+    technologies: ["TensorFlow", "CNN", "Transfer Learning", "Mobile ML", "Computer Vision"],
+    link: "https://github.com/siddharthprakash1"
   },
   {
-    title: "ShadowSpeak: Real-Time Anonymous Chat Platform",
+    title: "ShadowSpeak: Real-Time Chat",
     image: project8,
     description:
-      "Engage in instant messaging with ShadowSpeak, a real-time chat application built with Socket.IO. Chat anonymously or with your name visible.",
-    technologies: ["JavaScript", "SocketIO", "Moment.js", "DOM api"],
+      "Anonymous real-time chat platform built with WebSockets. Features instant messaging, presence indicators, and optional anonymity.",
+    technologies: ["Node.js", "Socket.IO", "WebSockets", "Real-time", "JavaScript"],
+    link: "https://github.com/siddharthprakash1"
   },
+];
 
-  
+export const EDUCATION = {
+  degree: "B.Tech in Computer Science",
+  university: "PES University",
+  period: "Oct 2021 - Apr 2025",
+  coursework: ["Machine Intelligence", "Operating Systems", "Computer Networks", "Cloud Computing", "DBMS", "Software Engineering", "DSA"]
+};
+
+export const CERTIFICATES = [
+  "TensorFlow 2.0: Deep Learning and AI",
+  "LangChain - Develop LLM Powered Applications",
+  "Supervised Machine Learning: Regression and Classification",
+  "AWS Educate: Serverless, Networking, Compute",
+  "Linux Kernel Development (LFD103)",
+  "Hacktoberfest 2022 Level 4"
 ];
 
 export const CONTACT = {
-  address: "PES EC Campus,Hosur Rd,Bangalore-560100 ",
-  phoneNo: "+91 7702842402 ",
+  address: "Bangalore, India",
+  phoneNo: "+91 7702842402",
   email: "iamsid0011@gmail.com",
+};
+
+export const SOCIAL_LINKS = {
+  github: "https://github.com/siddharthprakash1",
+  linkedin: "https://www.linkedin.com/in/siddharth-prakash-771596241/",
+  twitter: "https://x.com/_siddharth11_",
+  instagram: "https://www.instagram.com/snapsidphotography/",
+  portfolio: "https://siddharthprakash.vercel.app/"
 };
