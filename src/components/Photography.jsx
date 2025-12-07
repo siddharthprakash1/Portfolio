@@ -6,11 +6,18 @@ import * as THREE from 'three';
 import { Link } from 'react-router-dom';
 import { FaArrowLeft, FaTimes, FaExpand } from 'react-icons/fa';
 
-// Import image URLs lazily (not eager)
-const imageModules = import.meta.glob('../assets/Photography/*.{jpeg,jpg,png,JPEG,JPG,PNG}', { 
+// Try to import WebP images first, fallback to JPEG
+const webpModules = import.meta.glob('../assets/Photography-webp/*.webp', { 
   eager: false,
   import: 'default' 
 });
+const jpegModules = import.meta.glob('../assets/Photography/*.{jpeg,jpg,png,JPEG,JPG,PNG}', { 
+  eager: false,
+  import: 'default' 
+});
+
+// Use WebP if available, otherwise fallback to JPEG
+const imageModules = Object.keys(webpModules).length > 0 ? webpModules : jpegModules;
 const imageKeys = Object.keys(imageModules);
 
 // Loading placeholder component
@@ -508,12 +515,43 @@ const Photography = () => {
   const [isIdle, setIsIdle] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [isCanvasReady, setIsCanvasReady] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const idleTimeoutRef = useRef(null);
+  const touchStartY = useRef(0);
+  const lastTouchY = useRef(0);
 
-  // Delay canvas render to prevent blocking
+  // Preload first batch of images during loading screen
   useEffect(() => {
-    const timer = setTimeout(() => setIsCanvasReady(true), 100);
-    return () => clearTimeout(timer);
+    const preloadImages = async () => {
+      const imagesToPreload = imageKeys.slice(0, 6); // Preload first 6 images
+      let loaded = 0;
+      
+      for (const key of imagesToPreload) {
+        try {
+          const module = await imageModules[key]();
+          // Create an image element to actually load the image
+          const img = new Image();
+          img.src = module;
+          await new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve; // Continue even if one fails
+          });
+          loaded++;
+          setLoadingProgress(Math.round((loaded / imagesToPreload.length) * 100));
+        } catch (e) {
+          loaded++;
+          setLoadingProgress(Math.round((loaded / imagesToPreload.length) * 100));
+        }
+      }
+      
+      // Minimum loading time for the cool animation
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      setIsLoading(false);
+      setIsCanvasReady(true);
+    };
+
+    preloadImages();
   }, []);
 
   // Idle detection
@@ -527,7 +565,7 @@ const Photography = () => {
     }, 3000); // 3 seconds of inactivity
   }, []);
 
-  // Handle wheel scroll directly
+  // Handle wheel scroll and touch events
   useEffect(() => {
     const handleWheel = (e) => {
       resetIdleTimer();
@@ -537,12 +575,39 @@ const Photography = () => {
       });
     };
 
+    // Touch events for mobile
+    const handleTouchStart = (e) => {
+      touchStartY.current = e.touches[0].clientY;
+      lastTouchY.current = e.touches[0].clientY;
+      resetIdleTimer();
+    };
+
+    const handleTouchMove = (e) => {
+      e.preventDefault(); // Prevent default scroll behavior
+      const currentY = e.touches[0].clientY;
+      const deltaY = lastTouchY.current - currentY;
+      lastTouchY.current = currentY;
+      
+      resetIdleTimer();
+      setScrollProgress(prev => {
+        const delta = deltaY * 0.002; // Adjusted sensitivity for touch
+        return Math.max(0, Math.min(1, prev + delta));
+      });
+    };
+
+    const handleTouchEnd = () => {
+      resetIdleTimer();
+    };
+
     const handleMouseMove = () => {
       resetIdleTimer();
     };
 
     window.addEventListener('wheel', handleWheel, { passive: true });
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd, { passive: true });
     
     // Start idle timer
     resetIdleTimer();
@@ -550,6 +615,9 @@ const Photography = () => {
     return () => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
       if (idleTimeoutRef.current) {
         clearTimeout(idleTimeoutRef.current);
       }
@@ -564,8 +632,172 @@ const Photography = () => {
     setSelectedImage(null);
   };
 
+  // Loading screen
+  if (isLoading) {
+    return (
+      <div className="relative w-full h-screen bg-[#050505] overflow-hidden flex items-center justify-center">
+        <div className="relative flex flex-col items-center">
+          {/* Animated camera icon */}
+          <motion.div
+            className="relative mb-8"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 200 }}
+          >
+            {/* Outer ring */}
+            <motion.div
+              className="absolute -inset-8 border-2 border-emerald-500/30 rounded-full"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+            />
+            {/* Middle ring */}
+            <motion.div
+              className="absolute -inset-4 border border-cyan-500/40 rounded-full"
+              animate={{ rotate: -360 }}
+              transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+            />
+            
+            {/* Camera lens effect */}
+            <motion.div 
+              className="w-24 h-24 rounded-full bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 flex items-center justify-center"
+              animate={{ 
+                boxShadow: [
+                  '0 0 20px rgba(16, 185, 129, 0.3)',
+                  '0 0 40px rgba(16, 185, 129, 0.5)',
+                  '0 0 20px rgba(16, 185, 129, 0.3)',
+                ]
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <motion.div 
+                className="w-16 h-16 rounded-full bg-gradient-to-br from-emerald-500/30 to-cyan-500/30 flex items-center justify-center"
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <motion.div 
+                  className="w-8 h-8 rounded-full bg-emerald-500/50"
+                  animate={{ 
+                    scale: [1, 0.8, 1],
+                    opacity: [0.5, 1, 0.5]
+                  }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                />
+              </motion.div>
+            </motion.div>
+
+            {/* Aperture blades effect */}
+            {[...Array(8)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-1 h-12 bg-gradient-to-b from-emerald-500/50 to-transparent"
+                style={{
+                  left: '50%',
+                  top: '50%',
+                  transformOrigin: '50% 0%',
+                }}
+                initial={{ rotate: i * 45, x: '-50%' }}
+                animate={{ 
+                  rotate: [i * 45, i * 45 + 360],
+                  opacity: [0.3, 0.7, 0.3]
+                }}
+                transition={{ 
+                  rotate: { duration: 10, repeat: Infinity, ease: 'linear' },
+                  opacity: { duration: 2, repeat: Infinity, delay: i * 0.1 }
+                }}
+              />
+            ))}
+          </motion.div>
+
+          {/* Title */}
+          <motion.h2
+            className="text-2xl md:text-3xl font-bold mb-2 text-white"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <span className="gradient-text">Visual</span> Chronicles
+          </motion.h2>
+
+          {/* Loading text */}
+          <motion.p
+            className="text-gray-500 font-mono text-sm mb-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            [ PREPARING GALLERY ]
+          </motion.p>
+
+          {/* Progress bar */}
+          <motion.div
+            className="w-48 h-1 bg-gray-800 rounded-full overflow-hidden"
+            initial={{ opacity: 0, scaleX: 0 }}
+            animate={{ opacity: 1, scaleX: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <motion.div
+              className="h-full bg-gradient-to-r from-emerald-500 to-cyan-500"
+              initial={{ width: 0 }}
+              animate={{ width: `${loadingProgress}%` }}
+              transition={{ duration: 0.3 }}
+            />
+          </motion.div>
+
+          {/* Progress percentage */}
+          <motion.p
+            className="text-emerald-400 font-mono text-xs mt-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+          >
+            {loadingProgress}%
+          </motion.p>
+
+          {/* Floating photo frames */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-8 h-10 border border-emerald-500/30 rounded"
+              style={{
+                left: `${20 + Math.random() * 60}%`,
+                top: `${20 + Math.random() * 60}%`,
+              }}
+              initial={{ opacity: 0, scale: 0 }}
+              animate={{ 
+                opacity: [0, 0.5, 0],
+                scale: [0.5, 1, 0.5],
+                x: [0, (Math.random() - 0.5) * 50],
+                y: [0, (Math.random() - 0.5) * 50],
+              }}
+              transition={{ 
+                duration: 3,
+                repeat: Infinity,
+                delay: i * 0.5,
+                ease: 'easeInOut'
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Background grid */}
+        <div className="absolute inset-0 opacity-10">
+          <div 
+            className="w-full h-full"
+            style={{
+              backgroundImage: `
+                linear-gradient(rgba(16, 185, 129, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(16, 185, 129, 0.1) 1px, transparent 1px)
+              `,
+              backgroundSize: '50px 50px'
+            }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="relative w-full h-screen bg-[#050505] overflow-hidden">
+    <div className="relative w-full h-screen bg-[#050505] overflow-hidden touch-none">
       {/* Lightbox Modal */}
       <AnimatePresence>
         {selectedImage && (
@@ -607,7 +839,7 @@ const Photography = () => {
             <span className="gradient-text">Visual</span> <span className="text-white">Chronicles</span>
           </h1>
           <p className="text-gray-400 mt-4 max-w-lg mx-auto px-4 text-sm md:text-base font-mono">
-            [ SCROLL TO EXPLORE • CLICK TO VIEW FULL ]
+            [ SCROLL TO EXPLORE • TAP TO VIEW FULL ]
           </p>
         </motion.div>
       </div>
@@ -625,6 +857,16 @@ const Photography = () => {
         </p>
       </div>
 
+      {/* Mobile Scroll Indicator */}
+      <div className="fixed right-4 top-1/2 -translate-y-1/2 z-50 md:hidden pointer-events-none">
+        <div className="h-24 w-1 bg-white/10 rounded-full overflow-hidden">
+          <motion.div 
+            className="w-full bg-gradient-to-b from-emerald-500 to-cyan-500 rounded-full"
+            style={{ height: `${scrollProgress * 100}%` }}
+          />
+        </div>
+      </div>
+
       {/* Image Counter */}
       <div className="fixed bottom-6 left-6 z-50 pointer-events-none">
         <p className="text-gray-500 font-mono text-xs">
@@ -640,7 +882,8 @@ const Photography = () => {
         className="fixed bottom-6 right-6 z-50 flex items-center gap-2 text-gray-500 pointer-events-none"
       >
         <FaExpand className="text-emerald-400" />
-        <span className="font-mono text-xs">CLICK IMAGE FOR FULL VIEW</span>
+        <span className="font-mono text-xs hidden sm:inline">CLICK IMAGE FOR FULL VIEW</span>
+        <span className="font-mono text-xs sm:hidden">TAP FOR FULL</span>
       </motion.div>
 
       {/* 3D Canvas with error boundary */}
