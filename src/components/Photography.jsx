@@ -383,6 +383,78 @@ const AnimatedRings = memo(({ isIdle, config }) => {
   );
 });
 
+// Animated central core - always moving for better UX
+const AnimatedCore = memo(({ isIdle }) => {
+  const coreRef = useRef();
+  const outerRef = useRef();
+  const glowRef = useRef();
+
+  useFrame((state) => {
+    const time = state.clock.elapsedTime;
+    
+    // Inner core - continuous pulsing and floating
+    if (coreRef.current) {
+      // Breathing scale animation
+      const baseScale = isIdle ? 0.7 : 0.5;
+      const scaleOffset = Math.sin(time * 2) * 0.15 + Math.sin(time * 3.7) * 0.05;
+      coreRef.current.scale.setScalar(baseScale + scaleOffset);
+      
+      // Subtle position wobble
+      coreRef.current.position.x = Math.sin(time * 1.2) * 0.1;
+      coreRef.current.position.y = Math.cos(time * 0.8) * 0.15;
+      coreRef.current.position.z = Math.sin(time * 1.5) * 0.1;
+      
+      // Opacity pulse
+      coreRef.current.material.opacity = (isIdle ? 0.5 : 0.3) + Math.sin(time * 2.5) * 0.15;
+    }
+    
+    // Outer wireframe - rotation and scale
+    if (outerRef.current) {
+      const outerBaseScale = isIdle ? 1 : 0.7;
+      const outerScaleOffset = Math.sin(time * 1.5 + 1) * 0.1;
+      outerRef.current.scale.setScalar(outerBaseScale + outerScaleOffset);
+      
+      // Continuous rotation
+      outerRef.current.rotation.x = time * 0.3;
+      outerRef.current.rotation.y = time * 0.2;
+      outerRef.current.rotation.z = Math.sin(time * 0.5) * 0.3;
+      
+      // Follow core position slightly
+      outerRef.current.position.x = Math.sin(time * 1.2) * 0.05;
+      outerRef.current.position.y = Math.cos(time * 0.8) * 0.08;
+    }
+    
+    // Glow ring
+    if (glowRef.current) {
+      glowRef.current.rotation.z = time * 0.5;
+      glowRef.current.scale.setScalar(1.2 + Math.sin(time * 2) * 0.2);
+      glowRef.current.material.opacity = 0.1 + Math.sin(time * 3) * 0.05;
+    }
+  });
+
+  return (
+    <group>
+      {/* Inner glowing core */}
+      <mesh ref={coreRef}>
+        <sphereGeometry args={[0.5, 32, 32]} />
+        <meshBasicMaterial color="#00ff88" transparent opacity={0.3} />
+      </mesh>
+      
+      {/* Outer wireframe sphere */}
+      <mesh ref={outerRef}>
+        <sphereGeometry args={[0.7, 24, 24]} />
+        <meshBasicMaterial color="#00f3ff" transparent opacity={0.15} wireframe />
+      </mesh>
+      
+      {/* Glow ring */}
+      <mesh ref={glowRef} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.9, 0.02, 16, 64]} />
+        <meshBasicMaterial color="#00ff88" transparent opacity={0.1} />
+      </mesh>
+    </group>
+  );
+});
+
 // Error boundary for 3D scene
 class SceneErrorBoundary extends React.Component {
   constructor(props) {
@@ -448,15 +520,8 @@ const Scene = memo(({ scrollProgress, isIdle, onSelectImage, config }) => {
         ))}
       </Suspense>
       
-      {/* Central glowing core - pulses when idle */}
-      <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[isIdle ? 0.7 : 0.5, 32, 32]} />
-        <meshBasicMaterial color="#00ff88" transparent opacity={isIdle ? 0.5 : 0.3} />
-      </mesh>
-      <mesh position={[0, 0, 0]}>
-        <sphereGeometry args={[isIdle ? 1 : 0.7, 32, 32]} />
-        <meshBasicMaterial color="#00f3ff" transparent opacity={0.1} wireframe />
-      </mesh>
+      {/* Animated central core - always moving */}
+      <AnimatedCore isIdle={isIdle} />
       
       {/* Wireframe tunnel effect */}
       <mesh rotation={[Math.PI / 2, 0, 0]}>
