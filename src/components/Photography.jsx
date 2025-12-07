@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useMemo, Suspense, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useMemo, Suspense, useCallback, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useTexture } from '@react-three/drei';
@@ -6,27 +6,70 @@ import * as THREE from 'three';
 import { Link } from 'react-router-dom';
 import { FaArrowLeft, FaTimes, FaExpand } from 'react-icons/fa';
 
-// Import all images from Photography folder
-const imageModules = import.meta.glob('../assets/Photography/*.{jpeg,jpg,png,JPEG,JPG,PNG}', { eager: true });
-const imageUrls = Object.values(imageModules).map(img => img.default);
+// Import image URLs lazily (not eager)
+const imageModules = import.meta.glob('../assets/Photography/*.{jpeg,jpg,png,JPEG,JPG,PNG}', { 
+  eager: false,
+  import: 'default' 
+});
+const imageKeys = Object.keys(imageModules);
 
-// Component to render a single image with proper aspect ratio
-const PhotoFrame = ({ url, index, total, onSelect, isIdle }) => {
+// Loading placeholder component
+const LoadingPlaceholder = memo(({ position, rotation, size }) => {
+  const meshRef = useRef();
+  
+  useFrame((state) => {
+    if (meshRef.current) {
+      meshRef.current.material.opacity = 0.3 + Math.sin(state.clock.elapsedTime * 2) * 0.2;
+    }
+  });
+
+  return (
+    <group rotation={rotation}>
+      <mesh ref={meshRef} position={position}>
+        <boxGeometry args={size} />
+        <meshStandardMaterial 
+          color="#00ff88" 
+          transparent 
+          opacity={0.3}
+          wireframe
+        />
+      </mesh>
+    </group>
+  );
+});
+
+// Component to render a single image with proper aspect ratio - memoized for performance
+const PhotoFrame = memo(({ url, index, total, onSelect, isIdle, isVisible }) => {
   const meshRef = useRef();
   const frameRef = useRef();
   const [hovered, setHovered] = useState(false);
   const [imageAspect, setImageAspect] = useState(1);
+  const [textureError, setTextureError] = useState(false);
   
-  // Load texture
-  const texture = useTexture(url);
+  // Only load texture if visible
+  const texture = useTexture(
+    isVisible ? url : '/placeholder.svg',
+    (loadedTexture) => {
+      // Optimize texture settings
+      if (loadedTexture) {
+        loadedTexture.minFilter = THREE.LinearFilter;
+        loadedTexture.generateMipmaps = false;
+      }
+    },
+    undefined,
+    (error) => {
+      console.warn(`Failed to load texture for image ${index}:`, error);
+      setTextureError(true);
+    }
+  );
   
   // Calculate aspect ratio from the loaded texture
   useEffect(() => {
-    if (texture && texture.image) {
+    if (texture && texture.image && isVisible) {
       const aspect = texture.image.width / texture.image.height;
       setImageAspect(aspect);
     }
-  }, [texture]);
+  }, [texture, isVisible]);
 
   // Calculate position in a spiral/helix pattern
   const angle = (index / total) * Math.PI * 4;
@@ -85,8 +128,14 @@ const PhotoFrame = ({ url, index, total, onSelect, isIdle }) => {
 
   const handlePointerDown = (e) => {
     e.stopPropagation();
-    onSelect(url, imageAspect);
+    if (isVisible && !textureError) {
+      onSelect(url, imageAspect);
+    }
   };
+
+  if (textureError) {
+    return <LoadingPlaceholder position={basePosition} rotation={rotation} size={size} />;
+  }
 
   return (
     <group rotation={rotation}>
@@ -122,7 +171,62 @@ const PhotoFrame = ({ url, index, total, onSelect, isIdle }) => {
       </mesh>
     </group>
   );
-};
+});
+
+// Lazy loaded photo frame wrapper
+const LazyPhotoFrame = memo(({ imageKey, index, total, onSelect, isIdle, scrollProgress }) => {
+  const [imageUrl, setImageUrl] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Calculate if this image should be visible based on scroll progress
+  const normalizedIndex = index / total;
+  const viewportRange = 0.3; // Load images within 30% of viewport
+  const isVisible = Math.abs(normalizedIndex - scrollProgress) < viewportRange || scrollProgress === 0;
+  
+  // Lazy load the image URL when visible
+  useEffect(() => {
+    if (isVisible && !imageUrl) {
+      const loadImage = async () => {
+        try {
+          const module = await imageModules[imageKey]();
+          setImageUrl(module);
+          setIsLoading(false);
+        } catch (error) {
+          console.warn(`Failed to load image ${imageKey}:`, error);
+          setIsLoading(false);
+        }
+      };
+      loadImage();
+    }
+  }, [isVisible, imageKey, imageUrl]);
+
+  // Calculate position for placeholder
+  const angle = (index / total) * Math.PI * 4;
+  const radius = 8;
+  const heightSpread = 25;
+  const basePosition = useMemo(() => [
+    Math.cos(angle) * radius,
+    (index / total) * heightSpread - heightSpread / 2,
+    Math.sin(angle) * radius
+  ], [angle, index, total]);
+  const rotation = useMemo(() => [0, -angle + Math.PI / 2, 0], [angle]);
+  const size = [2.5, 2.5, 0.05];
+
+  if (!imageUrl || isLoading) {
+    return <LoadingPlaceholder position={basePosition} rotation={rotation} size={size} />;
+  }
+
+  return (
+    <PhotoFrame 
+      url={imageUrl}
+      index={index}
+      total={total}
+      onSelect={onSelect}
+      isIdle={isIdle}
+      isVisible={isVisible}
+    />
+  );
+});
 
 // Camera rig that follows scroll and has idle animation
 const CameraRig = ({ scrollProgress, isIdle }) => {
@@ -157,10 +261,10 @@ const CameraRig = ({ scrollProgress, isIdle }) => {
   return null;
 };
 
-// Floating particles with idle animation
-const Particles = ({ isIdle }) => {
+// Floating particles with idle animation - reduced count for performance
+const Particles = memo(({ isIdle }) => {
   const particlesRef = useRef();
-  const count = 300;
+  const count = 150; // Reduced from 300 for better performance
   
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3);
@@ -200,10 +304,10 @@ const Particles = ({ isIdle }) => {
       />
     </points>
   );
-};
+});
 
 // Animated rings
-const AnimatedRings = ({ isIdle }) => {
+const AnimatedRings = memo(({ isIdle }) => {
   const ring1Ref = useRef();
   const ring2Ref = useRef();
   const ring3Ref = useRef();
@@ -240,10 +344,46 @@ const AnimatedRings = ({ isIdle }) => {
       </mesh>
     </group>
   );
-};
+});
 
-// Main 3D Scene
-const Scene = ({ scrollProgress, isIdle, onSelectImage }) => {
+// Error boundary for 3D scene
+class SceneErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('3D Scene Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="flex items-center justify-center h-full text-emerald-400">
+          <div className="text-center">
+            <p className="text-lg font-mono mb-2">[ SCENE LOADING ERROR ]</p>
+            <button 
+              onClick={() => this.setState({ hasError: false })}
+              className="text-sm underline hover:text-white"
+            >
+              Try Again
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+// Main 3D Scene - with lazy loading
+const Scene = memo(({ scrollProgress, isIdle, onSelectImage }) => {
   return (
     <>
       <ambientLight intensity={0.5} />
@@ -257,14 +397,15 @@ const Scene = ({ scrollProgress, isIdle, onSelectImage }) => {
       <AnimatedRings isIdle={isIdle} />
       
       <Suspense fallback={null}>
-        {imageUrls.map((url, index) => (
-          <PhotoFrame 
-            key={index} 
-            url={url} 
+        {imageKeys.map((imageKey, index) => (
+          <LazyPhotoFrame 
+            key={imageKey} 
+            imageKey={imageKey}
             index={index} 
-            total={imageUrls.length}
+            total={imageKeys.length}
             onSelect={onSelectImage}
             isIdle={isIdle}
+            scrollProgress={scrollProgress}
           />
         ))}
       </Suspense>
@@ -286,10 +427,12 @@ const Scene = ({ scrollProgress, isIdle, onSelectImage }) => {
       </mesh>
     </>
   );
-};
+});
 
-// Lightbox Modal Component
+// Lightbox Modal Component with lazy image loading
 const Lightbox = ({ imageUrl, onClose }) => {
+  const [imageLoaded, setImageLoaded] = useState(false);
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -309,10 +452,17 @@ const Lightbox = ({ imageUrl, onClose }) => {
         <FaTimes size={20} />
       </motion.button>
 
+      {/* Loading indicator */}
+      {!imageLoaded && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-12 h-12 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+        </div>
+      )}
+
       {/* Image container */}
       <motion.div
         initial={{ scale: 0.5, opacity: 0, rotateY: -90 }}
-        animate={{ scale: 1, opacity: 1, rotateY: 0 }}
+        animate={{ scale: 1, opacity: imageLoaded ? 1 : 0, rotateY: 0 }}
         exit={{ scale: 0.5, opacity: 0, rotateY: 90 }}
         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
         className="relative max-w-[90vw] max-h-[85vh] cursor-default"
@@ -329,6 +479,8 @@ const Lightbox = ({ imageUrl, onClose }) => {
           style={{
             boxShadow: '0 0 60px rgba(0, 255, 136, 0.3)',
           }}
+          onLoad={() => setImageLoaded(true)}
+          loading="lazy"
         />
 
         {/* Corner accents */}
@@ -355,7 +507,14 @@ const Photography = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [isIdle, setIsIdle] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isCanvasReady, setIsCanvasReady] = useState(false);
   const idleTimeoutRef = useRef(null);
+
+  // Delay canvas render to prevent blocking
+  useEffect(() => {
+    const timer = setTimeout(() => setIsCanvasReady(true), 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Idle detection
   const resetIdleTimer = useCallback(() => {
@@ -469,7 +628,7 @@ const Photography = () => {
       {/* Image Counter */}
       <div className="fixed bottom-6 left-6 z-50 pointer-events-none">
         <p className="text-gray-500 font-mono text-xs">
-          <span className="text-emerald-400">{imageUrls.length}</span> FRAMES
+          <span className="text-emerald-400">{imageKeys.length}</span> FRAMES
         </p>
       </div>
 
@@ -484,18 +643,33 @@ const Photography = () => {
         <span className="font-mono text-xs">CLICK IMAGE FOR FULL VIEW</span>
       </motion.div>
 
-      {/* 3D Canvas */}
+      {/* 3D Canvas with error boundary */}
       <div className="absolute inset-0 z-0">
-        <Canvas
-          camera={{ position: [0, -12.5, 15], fov: 60 }}
-          gl={{ antialias: true, alpha: true }}
-        >
-          <Scene 
-            scrollProgress={scrollProgress} 
-            isIdle={isIdle}
-            onSelectImage={handleSelectImage}
-          />
-        </Canvas>
+        {isCanvasReady ? (
+          <SceneErrorBoundary>
+            <Canvas
+              camera={{ position: [0, -12.5, 15], fov: 60 }}
+              gl={{ 
+                antialias: true, 
+                alpha: true,
+                powerPreference: 'high-performance',
+                failIfMajorPerformanceCaveat: false
+              }}
+              dpr={[1, 1.5]} // Limit pixel ratio for performance
+              performance={{ min: 0.5 }}
+            >
+              <Scene 
+                scrollProgress={scrollProgress} 
+                isIdle={isIdle}
+                onSelectImage={handleSelectImage}
+              />
+            </Canvas>
+          </SceneErrorBoundary>
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <div className="w-12 h-12 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin" />
+          </div>
+        )}
       </div>
 
       {/* Vignette overlay */}
