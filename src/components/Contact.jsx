@@ -3,6 +3,7 @@ import { motion, useInView } from 'framer-motion';
 import { FaGithub, FaLinkedin, FaInstagram } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { HiOutlineMail, HiArrowRight } from 'react-icons/hi';
+import Contact3D from './canvas/Contact3D';
 
 const Contact = () => {
   const sectionRef = useRef(null);
@@ -39,6 +40,9 @@ const Contact = () => {
 
   return (
     <section ref={sectionRef} id="contact" className="py-16 sm:py-20 lg:py-24 relative overflow-hidden">
+      {/* 3D Background */}
+      <Contact3D />
+      
       {/* Background decoration */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-3xl" />
       

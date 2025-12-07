@@ -3,7 +3,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { FaArrowDown } from 'react-icons/fa';
 import { HiDownload } from 'react-icons/hi';
 import profilePic from "../assets/Sid.jpg";
-import resumeFile from "../assets/SiddharthPrakash.pdf";
+import resumeFile from "../assets/resume.pdf";
 
 import Hero3D from './canvas/Hero3D';
 
