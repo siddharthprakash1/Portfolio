@@ -89,7 +89,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden relative cursor-none">
+    <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden relative md:cursor-none">
       <CustomCursor />
       <KonamiCode />
       <div className="scanline" />
