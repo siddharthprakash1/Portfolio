@@ -2,11 +2,13 @@ import { createContext, useContext, useState, useEffect, useRef, useCallback } f
 
 const SoundContext = createContext();
 
-// Web Audio API based sound generator - no external files needed
+// Web Audio API based sound generator
 class SoundGenerator {
   constructor() {
     this.audioContext = null;
     this.initialized = false;
+    this.ambientNodes = null;
+    this.isAmbientPlaying = false;
   }
 
   init() {
@@ -19,9 +21,17 @@ class SoundGenerator {
     }
   }
 
-  // Soft click sound
+  // Resume audio context if suspended (needed for browsers)
+  async resume() {
+    if (this.audioContext && this.audioContext.state === 'suspended') {
+      await this.audioContext.resume();
+    }
+  }
+
+  // Soft click sound - ALWAYS plays
   playClick() {
     if (!this.audioContext) return;
+    this.resume();
     
     const oscillator = this.audioContext.createOscillator();
     const gainNode = this.audioContext.createGain();
@@ -32,16 +42,17 @@ class SoundGenerator {
     oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(400, this.audioContext.currentTime + 0.05);
     
-    gainNode.gain.setValueAtTime(0.1, this.audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.08, this.audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.05);
     
     oscillator.start(this.audioContext.currentTime);
     oscillator.stop(this.audioContext.currentTime + 0.05);
   }
 
-  // Soft hover sound
+  // Soft hover sound - ALWAYS plays
   playHover() {
     if (!this.audioContext) return;
+    this.resume();
     
     const oscillator = this.audioContext.createOscillator();
     const gainNode = this.audioContext.createGain();
@@ -53,7 +64,7 @@ class SoundGenerator {
     oscillator.frequency.setValueAtTime(600, this.audioContext.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(800, this.audioContext.currentTime + 0.03);
     
-    gainNode.gain.setValueAtTime(0.03, this.audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.025, this.audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.001, this.audioContext.currentTime + 0.03);
     
     oscillator.start(this.audioContext.currentTime);
@@ -63,6 +74,7 @@ class SoundGenerator {
   // Toggle on sound
   playToggleOn() {
     if (!this.audioContext) return;
+    this.resume();
     
     const oscillator = this.audioContext.createOscillator();
     const gainNode = this.audioContext.createGain();
@@ -74,7 +86,7 @@ class SoundGenerator {
     oscillator.frequency.setValueAtTime(400, this.audioContext.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(800, this.audioContext.currentTime + 0.1);
     
-    gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.12, this.audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.15);
     
     oscillator.start(this.audioContext.currentTime);
@@ -84,6 +96,7 @@ class SoundGenerator {
   // Toggle off sound
   playToggleOff() {
     if (!this.audioContext) return;
+    this.resume();
     
     const oscillator = this.audioContext.createOscillator();
     const gainNode = this.audioContext.createGain();
@@ -95,77 +108,125 @@ class SoundGenerator {
     oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
     oscillator.frequency.exponentialRampToValueAtTime(300, this.audioContext.currentTime + 0.1);
     
-    gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
+    gainNode.gain.setValueAtTime(0.12, this.audioContext.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.15);
     
     oscillator.start(this.audioContext.currentTime);
     oscillator.stop(this.audioContext.currentTime + 0.15);
   }
 
-  // Success/achievement sound
-  playSuccess() {
-    if (!this.audioContext) return;
+  // Start ambient background music
+  startAmbient() {
+    if (!this.audioContext || this.isAmbientPlaying) return;
+    this.resume();
+
+    // Create master gain for ambient
+    const masterGain = this.audioContext.createGain();
+    masterGain.gain.setValueAtTime(0, this.audioContext.currentTime);
+    masterGain.gain.linearRampToValueAtTime(0.03, this.audioContext.currentTime + 2); // Fade in
+    masterGain.connect(this.audioContext.destination);
+
+    // Create multiple layered oscillators for rich ambient texture
+    const oscillators = [];
+    const gains = [];
+
+    // Base drone - very low
+    const createDrone = (freq, type, gainValue, detuneAmount = 0) => {
+      const osc = this.audioContext.createOscillator();
+      const gain = this.audioContext.createGain();
+      const filter = this.audioContext.createBiquadFilter();
+      
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, this.audioContext.currentTime);
+      osc.detune.setValueAtTime(detuneAmount, this.audioContext.currentTime);
+      
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(800, this.audioContext.currentTime);
+      filter.Q.setValueAtTime(1, this.audioContext.currentTime);
+      
+      gain.gain.setValueAtTime(gainValue, this.audioContext.currentTime);
+      
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(masterGain);
+      
+      osc.start();
+      
+      oscillators.push(osc);
+      gains.push(gain);
+      
+      return { osc, gain, filter };
+    };
+
+    // Create layered ambient sounds
+    // Deep bass drone
+    createDrone(55, 'sine', 0.4); // A1
+    createDrone(55, 'sine', 0.3, 5); // Slightly detuned for richness
     
-    const playNote = (freq, startTime, duration) => {
-      const oscillator = this.audioContext.createOscillator();
-      const gainNode = this.audioContext.createGain();
-      
-      oscillator.connect(gainNode);
-      gainNode.connect(this.audioContext.destination);
-      
-      oscillator.type = 'sine';
-      oscillator.frequency.setValueAtTime(freq, startTime);
-      
-      gainNode.gain.setValueAtTime(0.1, startTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
-      
-      oscillator.start(startTime);
-      oscillator.stop(startTime + duration);
+    // Mid layer
+    createDrone(110, 'sine', 0.2); // A2
+    createDrone(165, 'sine', 0.1); // E3 (fifth)
+    
+    // High shimmer
+    createDrone(220, 'sine', 0.08); // A3
+    createDrone(330, 'sine', 0.05); // E4
+
+    // Add subtle LFO modulation to make it more alive
+    const lfo = this.audioContext.createOscillator();
+    const lfoGain = this.audioContext.createGain();
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(0.1, this.audioContext.currentTime); // Very slow
+    lfoGain.gain.setValueAtTime(3, this.audioContext.currentTime);
+    lfo.connect(lfoGain);
+    
+    // Connect LFO to modulate the filter frequencies slightly
+    oscillators.forEach((osc, i) => {
+      if (i > 1) {
+        lfoGain.connect(osc.frequency);
+      }
+    });
+    lfo.start();
+    oscillators.push(lfo);
+
+    // Store references for stopping later
+    this.ambientNodes = {
+      masterGain,
+      oscillators,
+      gains,
     };
     
-    const now = this.audioContext.currentTime;
-    playNote(523.25, now, 0.1); // C5
-    playNote(659.25, now + 0.1, 0.1); // E5
-    playNote(783.99, now + 0.2, 0.15); // G5
+    this.isAmbientPlaying = true;
   }
 
-  // Whoosh/transition sound
-  playWhoosh() {
-    if (!this.audioContext) return;
-    
-    const bufferSize = this.audioContext.sampleRate * 0.2;
-    const buffer = this.audioContext.createBuffer(1, bufferSize, this.audioContext.sampleRate);
-    const data = buffer.getChannelData(0);
-    
-    for (let i = 0; i < bufferSize; i++) {
-      data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
-    }
-    
-    const source = this.audioContext.createBufferSource();
-    const gainNode = this.audioContext.createGain();
-    const filter = this.audioContext.createBiquadFilter();
-    
-    source.buffer = buffer;
-    filter.type = 'bandpass';
-    filter.frequency.setValueAtTime(1000, this.audioContext.currentTime);
-    filter.frequency.exponentialRampToValueAtTime(200, this.audioContext.currentTime + 0.2);
-    
-    source.connect(filter);
-    filter.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
-    
-    gainNode.gain.setValueAtTime(0.08, this.audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
-    
-    source.start(this.audioContext.currentTime);
+  // Stop ambient background music
+  stopAmbient() {
+    if (!this.audioContext || !this.ambientNodes || !this.isAmbientPlaying) return;
+
+    const { masterGain, oscillators } = this.ambientNodes;
+    const now = this.audioContext.currentTime;
+
+    // Fade out
+    masterGain.gain.linearRampToValueAtTime(0, now + 1);
+
+    // Stop oscillators after fade
+    setTimeout(() => {
+      oscillators.forEach(osc => {
+        try {
+          osc.stop();
+        } catch (e) {
+          // Already stopped
+        }
+      });
+      this.ambientNodes = null;
+      this.isAmbientPlaying = false;
+    }, 1100);
   }
 }
 
 export const SoundProvider = ({ children }) => {
-  const [soundEnabled, setSoundEnabled] = useState(() => {
-    // Check localStorage for saved preference
-    const saved = localStorage.getItem('soundEnabled');
-    return saved === null ? false : saved === 'true'; // Default to OFF
+  const [musicEnabled, setMusicEnabled] = useState(() => {
+    const saved = localStorage.getItem('musicEnabled');
+    return saved === 'true'; // Default to OFF
   });
   
   const soundGenerator = useRef(null);
@@ -175,8 +236,19 @@ export const SoundProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('soundEnabled', soundEnabled.toString());
-  }, [soundEnabled]);
+    localStorage.setItem('musicEnabled', musicEnabled.toString());
+  }, [musicEnabled]);
+
+  // Handle ambient music based on state
+  useEffect(() => {
+    if (soundGenerator.current && soundGenerator.current.initialized) {
+      if (musicEnabled) {
+        soundGenerator.current.startAmbient();
+      } else {
+        soundGenerator.current.stopAmbient();
+      }
+    }
+  }, [musicEnabled]);
 
   const initSound = useCallback(() => {
     if (soundGenerator.current) {
@@ -184,57 +256,45 @@ export const SoundProvider = ({ children }) => {
     }
   }, []);
 
-  const toggleSound = useCallback(() => {
+  const toggleMusic = useCallback(() => {
     initSound();
-    setSoundEnabled(prev => {
+    setMusicEnabled(prev => {
       const newValue = !prev;
       if (soundGenerator.current && soundGenerator.current.initialized) {
         if (newValue) {
           soundGenerator.current.playToggleOn();
+          soundGenerator.current.startAmbient();
         } else {
           soundGenerator.current.playToggleOff();
+          soundGenerator.current.stopAmbient();
         }
       }
       return newValue;
     });
   }, [initSound]);
 
+  // Click sound - ALWAYS plays
   const playClick = useCallback(() => {
-    if (soundEnabled && soundGenerator.current) {
+    if (soundGenerator.current) {
       initSound();
       soundGenerator.current.playClick();
     }
-  }, [soundEnabled, initSound]);
+  }, [initSound]);
 
+  // Hover sound - ALWAYS plays
   const playHover = useCallback(() => {
-    if (soundEnabled && soundGenerator.current) {
+    if (soundGenerator.current) {
       initSound();
       soundGenerator.current.playHover();
     }
-  }, [soundEnabled, initSound]);
-
-  const playSuccess = useCallback(() => {
-    if (soundEnabled && soundGenerator.current) {
-      initSound();
-      soundGenerator.current.playSuccess();
-    }
-  }, [soundEnabled, initSound]);
-
-  const playWhoosh = useCallback(() => {
-    if (soundEnabled && soundGenerator.current) {
-      initSound();
-      soundGenerator.current.playWhoosh();
-    }
-  }, [soundEnabled, initSound]);
+  }, [initSound]);
 
   return (
     <SoundContext.Provider value={{
-      soundEnabled,
-      toggleSound,
+      musicEnabled,
+      toggleMusic,
       playClick,
       playHover,
-      playSuccess,
-      playWhoosh,
     }}>
       {children}
     </SoundContext.Provider>
@@ -250,4 +310,3 @@ export const useSound = () => {
 };
 
 export default SoundContext;
-

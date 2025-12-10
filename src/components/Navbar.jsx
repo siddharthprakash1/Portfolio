@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaGithub, FaLinkedin, FaBars, FaTimes, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaBars, FaTimes, FaMusic } from 'react-icons/fa';
+import { IoMusicalNotesOutline, IoMusicalNotesSharp } from 'react-icons/io5';
 import { FaXTwitter } from 'react-icons/fa6';
 import { Link, useLocation } from 'react-router-dom';
 import { useSound } from '../context/SoundContext';
@@ -20,7 +21,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const location = useLocation();
-  const { soundEnabled, toggleSound, playClick, playHover } = useSound();
+  const { musicEnabled, toggleMusic, playClick, playHover } = useSound();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -119,31 +120,31 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Social Links & Sound Toggle */}
+            {/* Social Links & Music Toggle */}
             <div className="hidden md:flex items-center gap-3 lg:gap-4">
-              {/* Sound Toggle */}
+              {/* Music Toggle */}
               <motion.button
-                onClick={toggleSound}
+                onClick={toggleMusic}
                 onMouseEnter={playHover}
                 className={`relative w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
-                  soundEnabled ? 'text-emerald-400' : 'text-gray-500'
+                  musicEnabled ? 'text-emerald-400' : 'text-gray-500'
                 }`}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
-                title={soundEnabled ? 'Sound On' : 'Sound Off'}
+                title={musicEnabled ? 'Music On' : 'Music Off'}
               >
                 <AnimatePresence mode="wait">
-                  {soundEnabled ? (
+                  {musicEnabled ? (
                     <motion.div
                       key="on"
                       initial={{ scale: 0, rotate: -90 }}
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: 90 }}
                     >
-                      <FaVolumeUp size={16} />
+                      <IoMusicalNotesSharp size={16} />
                     </motion.div>
                   ) : (
                     <motion.div
@@ -152,16 +153,31 @@ const Navbar = () => {
                       animate={{ scale: 1, rotate: 0 }}
                       exit={{ scale: 0, rotate: 90 }}
                     >
-                      <FaVolumeMute size={16} />
+                      <IoMusicalNotesOutline size={16} />
                     </motion.div>
                   )}
                 </AnimatePresence>
-                {soundEnabled && (
-                  <motion.div
-                    className="absolute inset-0 rounded-full border border-emerald-400/50"
-                    animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
+                {musicEnabled && (
+                  <>
+                    <motion.div
+                      className="absolute inset-0 rounded-full border border-emerald-400/50"
+                      animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                    />
+                    {/* Sound wave indicators */}
+                    <motion.div
+                      className="absolute -right-1 top-1/2 w-0.5 h-2 bg-emerald-400 rounded-full"
+                      animate={{ scaleY: [0.5, 1, 0.5], opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 0.8, repeat: Infinity }}
+                      style={{ translateY: '-50%' }}
+                    />
+                    <motion.div
+                      className="absolute -right-2.5 top-1/2 w-0.5 h-3 bg-emerald-400 rounded-full"
+                      animate={{ scaleY: [1, 0.5, 1], opacity: [1, 0.5, 1] }}
+                      transition={{ duration: 0.8, repeat: Infinity, delay: 0.2 }}
+                      style={{ translateY: '-50%' }}
+                    />
+                  </>
                 )}
               </motion.button>
 
@@ -263,16 +279,16 @@ const Navbar = () => {
                   </Link>
                 ))}
 
-                {/* Sound Toggle - Mobile */}
+                {/* Music Toggle - Mobile */}
                 <motion.button
-                  onClick={toggleSound}
-                  className={`flex items-center gap-3 mt-4 ${soundEnabled ? 'text-emerald-400' : 'text-gray-400'}`}
+                  onClick={toggleMusic}
+                  className={`flex items-center gap-3 mt-4 ${musicEnabled ? 'text-emerald-400' : 'text-gray-400'}`}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.5 }}
                 >
-                  {soundEnabled ? <FaVolumeUp size={20} /> : <FaVolumeMute size={20} />}
-                  <span className="text-sm">{soundEnabled ? 'Sound On' : 'Sound Off'}</span>
+                  {musicEnabled ? <IoMusicalNotesSharp size={20} /> : <IoMusicalNotesOutline size={20} />}
+                  <span className="text-sm">{musicEnabled ? 'Music On' : 'Music Off'}</span>
                 </motion.button>
                 
                 <div className="flex items-center gap-6 mt-8">
