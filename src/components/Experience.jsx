@@ -9,6 +9,7 @@ const experiences = [
     role: 'Software Engineer',
     company: 'Couchbase',
     team: 'AI-as-a-Service Team',
+    type: 'Full-time',
     description: 'Building scalable agentic workflows and AI systems. Developing internal tools and automation pipelines.',
     technologies: ['LangChain', 'Python', 'Agentic AI', 'NoSQL'],
     current: true,
@@ -17,21 +18,24 @@ const experiences = [
     year: 'Aug 2024 — Oct 2024',
     role: 'Software Engineer',
     company: 'Keysight Technologies',
+    type: 'Full-time',
     description: 'Converted from intern to full-time. Continued AI-driven analysis systems and protocol automation.',
     technologies: ['Python', 'Protocol Analysis', 'AI Systems'],
   },
   {
-    year: 'Feb 2024 — Jun 2024',
+    year: 'Feb 2024 — Aug 2024',
     role: 'R&D Intern',
     company: 'Keysight Technologies',
+    type: 'Internship',
     description: 'Built AI-powered analysis systems. Filed 2 IPs (both accepted). Automated 471+ protocol attributes.',
     technologies: ['Python', 'Wireshark', 'AI/ML', 'IP Filing'],
     highlight: '2 IPs Accepted',
   },
   {
     year: 'Jun 2023 — Aug 2023',
-    role: 'Research Associate',
+    role: 'Research Intern',
     company: 'STARC',
+    type: 'Internship',
     description: 'Combined Monte Carlo simulations with ML to predict football outcomes. Analyzed 25,000+ matches.',
     technologies: ['Python', 'Machine Learning', 'Data Analysis'],
   },
@@ -137,7 +141,18 @@ const Experience = () => {
                               </motion.span>
                             )}
                           </div>
-                          <p className="text-emerald-400 text-sm sm:text-base font-mono">{exp.company}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="text-emerald-400 text-sm sm:text-base font-mono">{exp.company}</p>
+                            {exp.type && (
+                              <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                                exp.type === 'Full-time' 
+                                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' 
+                                  : 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30'
+                              }`}>
+                                {exp.type}
+                              </span>
+                            )}
+                          </div>
                           {exp.team && <p className="text-gray-500 text-xs sm:text-sm">{exp.team}</p>}
                         </div>
                         <motion.span
