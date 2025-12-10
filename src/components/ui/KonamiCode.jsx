@@ -279,15 +279,33 @@ const KonamiCode = () => {
         )}
       </AnimatePresence>
 
-      {/* Subtle hint in corner - slightly visible, more visible on hover */}
-      <motion.div
-        className="fixed bottom-4 left-4 z-50 group cursor-default"
-        whileHover={{ scale: 1.05 }}
-      >
-        <span className="text-gray-600 group-hover:text-emerald-400 text-xs font-mono select-none transition-colors duration-300 opacity-30 group-hover:opacity-100">
-          ↑↑↓↓←→←→BA
-        </span>
-      </motion.div>
+      {/* Hint in corner with tooltip */}
+      <div className="fixed bottom-4 left-4 z-50 group">
+        {/* Tooltip */}
+        <div className="absolute bottom-full left-0 mb-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 pointer-events-none">
+          <div className="bg-gray-900/95 backdrop-blur-sm border border-emerald-500/30 rounded-lg px-3 py-2 whitespace-nowrap">
+            <p className="text-emerald-400 text-xs font-medium flex items-center gap-2">
+              <span className="text-base">🎮</span>
+              Type this on your keyboard!
+            </p>
+            <p className="text-gray-500 text-[10px] mt-1">Secret easter egg</p>
+          </div>
+          {/* Tooltip arrow */}
+          <div className="absolute left-4 -bottom-1 w-2 h-2 bg-gray-900/95 border-r border-b border-emerald-500/30 transform rotate-45" />
+        </div>
+        
+        {/* The code hint */}
+        <motion.div
+          className="cursor-pointer flex items-center gap-2"
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          <span className="text-lg opacity-40 group-hover:opacity-100 transition-opacity">⌨️</span>
+          <span className="text-gray-600 group-hover:text-emerald-400 text-xs font-mono select-none transition-all duration-300 opacity-40 group-hover:opacity-100">
+            ↑↑↓↓←→←→BA
+          </span>
+        </motion.div>
+      </div>
     </>
   );
 };
