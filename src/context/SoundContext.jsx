@@ -2,13 +2,14 @@ import { createContext, useContext, useState, useEffect, useRef, useCallback } f
 
 const SoundContext = createContext();
 
-// Web Audio API based sound generator
+// Web Audio API based sound generator - Minecraft-style ambient
 class SoundGenerator {
   constructor() {
     this.audioContext = null;
     this.initialized = false;
     this.ambientNodes = null;
     this.isAmbientPlaying = false;
+    this.melodyInterval = null;
   }
 
   init() {
@@ -78,182 +79,266 @@ class SoundGenerator {
     if (!this.audioContext) return;
     await this.resume();
     
-    const oscillator = this.audioContext.createOscillator();
-    const gainNode = this.audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
-    
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(400, this.audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(800, this.audioContext.currentTime + 0.15);
-    
-    gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
-    
-    oscillator.start(this.audioContext.currentTime);
-    oscillator.stop(this.audioContext.currentTime + 0.2);
+    // Play a gentle arpeggio as toggle sound
+    const notes = [261.63, 329.63, 392, 523.25]; // C E G C
+    notes.forEach((freq, i) => {
+      const osc = this.audioContext.createOscillator();
+      const gain = this.audioContext.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, this.audioContext.currentTime);
+      osc.connect(gain);
+      gain.connect(this.audioContext.destination);
+      
+      const startTime = this.audioContext.currentTime + i * 0.08;
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(0.1, startTime + 0.05);
+      gain.gain.linearRampToValueAtTime(0, startTime + 0.3);
+      
+      osc.start(startTime);
+      osc.stop(startTime + 0.35);
+    });
   }
 
   async playToggleOff() {
     if (!this.audioContext) return;
     await this.resume();
     
-    const oscillator = this.audioContext.createOscillator();
-    const gainNode = this.audioContext.createGain();
+    // Descending arpeggio
+    const notes = [523.25, 392, 329.63, 261.63]; // C G E C (descending)
+    notes.forEach((freq, i) => {
+      const osc = this.audioContext.createOscillator();
+      const gain = this.audioContext.createGain();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, this.audioContext.currentTime);
+      osc.connect(gain);
+      gain.connect(this.audioContext.destination);
+      
+      const startTime = this.audioContext.currentTime + i * 0.08;
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(0.1, startTime + 0.05);
+      gain.gain.linearRampToValueAtTime(0, startTime + 0.25);
+      
+      osc.start(startTime);
+      osc.stop(startTime + 0.3);
+    });
+  }
+
+  // Play a single piano-like note with reverb feel
+  playNote(freq, duration = 2, volume = 0.12, delay = 0) {
+    if (!this.audioContext) return;
+
+    const startTime = this.audioContext.currentTime + delay;
     
-    oscillator.connect(gainNode);
-    gainNode.connect(this.audioContext.destination);
+    // Main tone
+    const osc1 = this.audioContext.createOscillator();
+    const osc2 = this.audioContext.createOscillator();
+    const gain = this.audioContext.createGain();
+    const filter = this.audioContext.createBiquadFilter();
     
-    oscillator.type = 'sine';
-    oscillator.frequency.setValueAtTime(800, this.audioContext.currentTime);
-    oscillator.frequency.exponentialRampToValueAtTime(300, this.audioContext.currentTime + 0.15);
+    // Soft sine wave
+    osc1.type = 'sine';
+    osc1.frequency.setValueAtTime(freq, startTime);
     
-    gainNode.gain.setValueAtTime(0.15, this.audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.2);
+    // Add slight harmonic for warmth
+    osc2.type = 'sine';
+    osc2.frequency.setValueAtTime(freq * 2, startTime); // Octave up
     
-    oscillator.start(this.audioContext.currentTime);
-    oscillator.stop(this.audioContext.currentTime + 0.2);
+    const osc2Gain = this.audioContext.createGain();
+    osc2Gain.gain.setValueAtTime(0.15, startTime); // Much quieter
+    
+    // Soft lowpass filter
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(2000, startTime);
+    filter.Q.setValueAtTime(0.5, startTime);
+    
+    // Piano-like envelope: quick attack, slow decay
+    gain.gain.setValueAtTime(0, startTime);
+    gain.gain.linearRampToValueAtTime(volume, startTime + 0.02); // Quick attack
+    gain.gain.exponentialRampToValueAtTime(volume * 0.3, startTime + duration * 0.3);
+    gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+    
+    // Connect
+    osc1.connect(filter);
+    osc2.connect(osc2Gain);
+    osc2Gain.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ambientNodes?.masterGain || this.audioContext.destination);
+    
+    osc1.start(startTime);
+    osc2.start(startTime);
+    osc1.stop(startTime + duration + 0.1);
+    osc2.stop(startTime + duration + 0.1);
   }
 
   async startAmbient() {
     if (!this.audioContext || this.isAmbientPlaying) return;
     await this.resume();
 
-    // Master gain - medium volume
+    // Master gain
     const masterGain = this.audioContext.createGain();
     masterGain.gain.setValueAtTime(0, this.audioContext.currentTime);
-    masterGain.gain.linearRampToValueAtTime(0.12, this.audioContext.currentTime + 3); // 12% - comfortable level
+    masterGain.gain.linearRampToValueAtTime(0.15, this.audioContext.currentTime + 3);
     masterGain.connect(this.audioContext.destination);
 
     const oscillators = [];
-    const gainNodes = [];
 
-    // Create individual voices with their own gain for swelling effect
-    const createVoice = (freq, baseGain, panValue = 0) => {
+    // Soft pad underneath (like Minecraft's ambient bed)
+    const createPad = (freq, vol) => {
       const osc = this.audioContext.createOscillator();
       const gain = this.audioContext.createGain();
       const filter = this.audioContext.createBiquadFilter();
-      const panner = this.audioContext.createStereoPanner();
       
       osc.type = 'sine';
       osc.frequency.setValueAtTime(freq, this.audioContext.currentTime);
       
       filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(1200, this.audioContext.currentTime);
-      filter.Q.setValueAtTime(0.7, this.audioContext.currentTime);
+      filter.frequency.setValueAtTime(400, this.audioContext.currentTime);
       
-      gain.gain.setValueAtTime(baseGain, this.audioContext.currentTime);
-      panner.pan.setValueAtTime(panValue, this.audioContext.currentTime);
+      gain.gain.setValueAtTime(vol, this.audioContext.currentTime);
       
       osc.connect(filter);
       filter.connect(gain);
-      gain.connect(panner);
-      panner.connect(masterGain);
-      
+      gain.connect(masterGain);
       osc.start();
       oscillators.push(osc);
-      gainNodes.push(gain);
-      
-      return { osc, gain, filter };
     };
 
-    // Create a lush Am9 chord spread across stereo field
-    // Each note at different pan positions for width
-    createVoice(110, 0.5, 0);       // A2 - center (root)
-    createVoice(164.81, 0.4, -0.3); // E3 - slight left (fifth)  
-    createVoice(196, 0.35, 0.3);    // G3 - slight right (seventh)
-    createVoice(261.63, 0.3, -0.5); // C4 - left (minor third)
-    createVoice(329.63, 0.25, 0.5); // E4 - right (fifth)
-    createVoice(493.88, 0.15, 0);   // B4 - center (ninth)
-    
-    // Add slightly detuned doubles for chorus/shimmer effect
-    createVoice(110.5, 0.2, 0.2);   // Detuned A2
-    createVoice(165.5, 0.15, -0.2); // Detuned E3
-    createVoice(330.5, 0.1, 0.4);   // Detuned E4
+    // Very soft, low drone pad
+    createPad(65.41, 0.25);  // C2
+    createPad(98, 0.15);     // G2
+    createPad(130.81, 0.1);  // C3
 
-    // Create evolving movement - notes gently swell in and out
-    const createSwell = () => {
-      const now = this.audioContext.currentTime;
-      const swellDuration = 8; // 8 seconds per swell cycle
-      
-      gainNodes.forEach((gain, i) => {
-        const baseValue = gain.gain.value;
-        const offset = i * 0.8; // Stagger the swells
-        
-        // Create continuous swelling pattern
-        const scheduleSwells = (startTime) => {
-          const swellTime = startTime + offset;
-          gain.gain.setValueAtTime(baseValue * 0.6, swellTime);
-          gain.gain.linearRampToValueAtTime(baseValue, swellTime + swellDuration / 2);
-          gain.gain.linearRampToValueAtTime(baseValue * 0.6, swellTime + swellDuration);
-        };
-        
-        // Schedule initial swells
-        for (let t = 0; t < 60; t += swellDuration) {
-          scheduleSwells(now + t);
-        }
-      });
-    };
-
-    createSwell();
-
-    // Add a very subtle high shimmer that fades in and out
-    const shimmer = this.audioContext.createOscillator();
-    const shimmerGain = this.audioContext.createGain();
-    const shimmerFilter = this.audioContext.createBiquadFilter();
-    
-    shimmer.type = 'sine';
-    shimmer.frequency.setValueAtTime(880, this.audioContext.currentTime); // A5
-    shimmerFilter.type = 'lowpass';
-    shimmerFilter.frequency.setValueAtTime(2000, this.audioContext.currentTime);
-    shimmerGain.gain.setValueAtTime(0, this.audioContext.currentTime);
-    
-    shimmer.connect(shimmerFilter);
-    shimmerFilter.connect(shimmerGain);
-    shimmerGain.connect(masterGain);
-    shimmer.start();
-    oscillators.push(shimmer);
-
-    // Shimmer fades in and out slowly
-    const now = this.audioContext.currentTime;
-    for (let t = 0; t < 120; t += 12) {
-      shimmerGain.gain.linearRampToValueAtTime(0, now + t);
-      shimmerGain.gain.linearRampToValueAtTime(0.08, now + t + 6);
-      shimmerGain.gain.linearRampToValueAtTime(0, now + t + 12);
-    }
-
-    this.ambientNodes = {
-      masterGain,
-      oscillators,
-      gainNodes,
-    };
-    
+    this.ambientNodes = { masterGain, oscillators };
     this.isAmbientPlaying = true;
+
+    // Pentatonic scale notes (C major pentatonic - peaceful, Minecraft-like)
+    // C D E G A in different octaves
+    const pentatonic = [
+      261.63, 293.66, 329.63, 392.00, 440.00,  // C4 D4 E4 G4 A4
+      523.25, 587.33, 659.25, 783.99, 880.00,  // C5 D5 E5 G5 A5
+      196.00, 220.00, 246.94,                   // G3 A3 B3
+    ];
+
+    // Melodic patterns inspired by Minecraft
+    const patterns = [
+      [0, 4, 2, 5],      // Arpeggio up
+      [5, 2, 4, 0],      // Arpeggio down  
+      [0, 2, 4, 7],      // Scale run
+      [7, 5, 4, 2],      // Scale down
+      [0, 5, 3, 7],      // Jumpy
+      [4, 0, 5, 2],      // Mixed
+      [0, 7, 4, 9],      // Wide intervals
+      [9, 5, 7, 0],      // Descending wide
+    ];
+
+    let currentPattern = 0;
+    let noteIndex = 0;
+    let lastNote = -1;
+
+    // Play gentle melody notes
+    const playMelody = () => {
+      if (!this.isAmbientPlaying) return;
+
+      const pattern = patterns[currentPattern];
+      const scaleIndex = pattern[noteIndex];
+      const freq = pentatonic[scaleIndex];
+      
+      // Avoid repeating the same note
+      if (scaleIndex !== lastNote) {
+        // Random variations
+        const duration = 2 + Math.random() * 2; // 2-4 seconds
+        const volume = 0.08 + Math.random() * 0.06; // Varied volume
+        
+        this.playNote(freq, duration, volume);
+        
+        // Sometimes play a harmony note
+        if (Math.random() > 0.6) {
+          const harmonyIndex = (scaleIndex + 2) % pentatonic.length;
+          this.playNote(pentatonic[harmonyIndex], duration * 0.8, volume * 0.5, 0.1);
+        }
+        
+        // Occasionally play an octave
+        if (Math.random() > 0.8) {
+          this.playNote(freq / 2, duration * 1.2, volume * 0.3, 0.2);
+        }
+        
+        lastNote = scaleIndex;
+      }
+
+      noteIndex++;
+      if (noteIndex >= pattern.length) {
+        noteIndex = 0;
+        // Move to next pattern, with some randomness
+        if (Math.random() > 0.5) {
+          currentPattern = Math.floor(Math.random() * patterns.length);
+        } else {
+          currentPattern = (currentPattern + 1) % patterns.length;
+        }
+      }
+    };
+
+    // Start melody after a short delay
+    setTimeout(() => {
+      if (this.isAmbientPlaying) {
+        playMelody();
+        // Play notes every 1.5-3 seconds (randomized for natural feel)
+        this.melodyInterval = setInterval(() => {
+          if (this.isAmbientPlaying) {
+            playMelody();
+          }
+        }, 1500 + Math.random() * 1500);
+      }
+    }, 2000);
+
+    // Add occasional high shimmery notes (like Minecraft's sparkle sounds)
+    const playShimmer = () => {
+      if (!this.isAmbientPlaying) return;
+      
+      const highNotes = [1318.51, 1567.98, 1760, 2093]; // E6, G6, A6, C7
+      const note = highNotes[Math.floor(Math.random() * highNotes.length)];
+      
+      this.playNote(note, 3, 0.03); // Very quiet, long decay
+      
+      // Schedule next shimmer
+      if (this.isAmbientPlaying) {
+        setTimeout(playShimmer, 8000 + Math.random() * 12000); // Every 8-20 seconds
+      }
+    };
+
+    // Start shimmers after 5 seconds
+    setTimeout(() => {
+      if (this.isAmbientPlaying) playShimmer();
+    }, 5000);
   }
 
   stopAmbient() {
     if (!this.audioContext || !this.ambientNodes || !this.isAmbientPlaying) return;
 
+    // Stop melody
+    if (this.melodyInterval) {
+      clearInterval(this.melodyInterval);
+      this.melodyInterval = null;
+    }
+
     const { masterGain, oscillators } = this.ambientNodes;
     const now = this.audioContext.currentTime;
 
-    // Cancel scheduled gain changes
     masterGain.gain.cancelScheduledValues(now);
     masterGain.gain.setValueAtTime(masterGain.gain.value, now);
     masterGain.gain.linearRampToValueAtTime(0, now + 2);
+
+    this.isAmbientPlaying = false;
 
     setTimeout(() => {
       oscillators.forEach(osc => {
         try {
           osc.stop();
           osc.disconnect();
-        } catch (e) {
-          // Already stopped
-        }
+        } catch (e) {}
       });
       this.ambientNodes = null;
-      this.isAmbientPlaying = false;
     }, 2100);
   }
 }
@@ -292,7 +377,7 @@ export const SoundProvider = ({ children }) => {
           soundGenerator.current.playToggleOn();
           setTimeout(() => {
             soundGenerator.current.startAmbient();
-          }, 200);
+          }, 400);
         } else {
           soundGenerator.current.playToggleOff();
           soundGenerator.current.stopAmbient();
