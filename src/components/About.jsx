@@ -106,7 +106,7 @@ const About = () => {
               transition={{ delay: 0.5, type: 'spring', stiffness: 200 }}
               className="absolute -bottom-4 -right-4 sm:-bottom-6 sm:-right-6 glass rounded-xl p-3 sm:p-4 float"
             >
-              <div className="text-2xl sm:text-3xl font-bold gradient-text">1.5</div>
+              <div className="text-2xl sm:text-3xl font-bold gradient-text">1.5+</div>
               <div className="text-xs sm:text-sm text-gray-500">Years Exp</div>
             </motion.div>
           </motion.div>
