@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { motion, useInView, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { FaExternalLinkAlt, FaGithub } from 'react-icons/fa';
 import { Magnetic } from './ui/Magnetic';
+import { useSound } from '../context/SoundContext';
 import project2 from "../assets/projects/compressed.gif";
 import project5 from "../assets/projects/gifmaker_me.gif";
 import project6 from "../assets/projects/dcgan.gif";
@@ -93,6 +94,7 @@ const projects = [
 const ProjectCard = ({ project, index, isInView }) => {
   const cardRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
+  const { playClick, playHover } = useSound();
   
   const x = useMotionValue(0);
   const y = useMotionValue(0);
@@ -122,6 +124,11 @@ const ProjectCard = ({ project, index, isInView }) => {
     setIsHovered(false);
   };
 
+  const handleCardClick = () => {
+    playClick();
+    window.open(project.github, '_blank', 'noopener,noreferrer');
+  };
+
   return (
     <motion.div
       ref={cardRef}
@@ -129,12 +136,14 @@ const ProjectCard = ({ project, index, isInView }) => {
       animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
       transition={{ delay: index * 0.1, duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
+      onMouseEnter={() => { setIsHovered(true); playHover(); }}
       onMouseLeave={handleMouseLeave}
+      onClick={handleCardClick}
       style={{
         rotateX,
         rotateY,
         transformStyle: "preserve-3d",
+        cursor: 'pointer',
       }}
       className="card overflow-hidden group"
     >
@@ -174,6 +183,7 @@ const ProjectCard = ({ project, index, isInView }) => {
           href={project.github}
           target="_blank"
           rel="noopener noreferrer"
+          onClick={(e) => { e.stopPropagation(); playClick(); }}
           className="absolute top-3 left-3 sm:top-4 sm:left-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/70 backdrop-blur-sm flex items-center justify-center text-white"
           initial={{ opacity: 0, scale: 0 }}
           animate={{ opacity: isHovered ? 1 : 0, scale: isHovered ? 1 : 0 }}
@@ -215,6 +225,7 @@ const ProjectCard = ({ project, index, isInView }) => {
 const Projects = () => {
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const { playClick, playHover } = useSound();
 
   return (
     <section ref={sectionRef} id="projects" className="py-16 sm:py-20 lg:py-24 relative">
@@ -261,6 +272,8 @@ const Projects = () => {
             href="https://github.com/siddharthprakash1"
             target="_blank"
             rel="noopener noreferrer"
+            onClick={playClick}
+            onMouseEnter={playHover}
             className="btn-outline inline-flex"
             whileHover={{ scale: 1.05, y: -2 }}
             whileTap={{ scale: 0.95 }}

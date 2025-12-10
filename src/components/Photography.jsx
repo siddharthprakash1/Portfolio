@@ -5,6 +5,7 @@ import { useTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import { Link } from 'react-router-dom';
 import { FaArrowLeft, FaTimes, FaExpand } from 'react-icons/fa';
+import { useSound } from '../context/SoundContext';
 
 // Try to import WebP images first, fallback to JPEG
 const webpModules = import.meta.glob('../assets/Photography-webp/*.webp', { 
@@ -533,8 +534,13 @@ const Scene = memo(({ scrollProgress, isIdle, onSelectImage, config }) => {
 });
 
 // Lightbox Modal Component with lazy image loading
-const Lightbox = ({ imageUrl, onClose }) => {
+const Lightbox = ({ imageUrl, onClose, playClick }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+
+  const handleClose = () => {
+    playClick();
+    onClose();
+  };
 
   return (
     <motion.div
@@ -542,14 +548,14 @@ const Lightbox = ({ imageUrl, onClose }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl cursor-pointer"
-      onClick={onClose}
+      onClick={handleClose}
     >
       {/* Close button */}
       <motion.button
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.2 }}
-        onClick={onClose}
+        onClick={handleClose}
         className="absolute top-4 right-4 sm:top-6 sm:right-6 w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-emerald-500/50 flex items-center justify-center text-emerald-400 hover:bg-emerald-500/20 transition-colors z-10"
       >
         <FaTimes size={16} className="sm:hidden" />
@@ -620,6 +626,7 @@ const Photography = () => {
   
   const isMobile = useIsMobile();
   const sceneConfig = useMemo(() => getSceneConfig(isMobile), [isMobile]);
+  const { playClick, playHover } = useSound();
 
   // Preload first batch of images during loading screen
   useEffect(() => {
@@ -726,8 +733,9 @@ const Photography = () => {
   }, [resetIdleTimer]);
 
   const handleSelectImage = useCallback((url, aspect) => {
+    playClick();
     setSelectedImage({ url, aspect });
-  }, []);
+  }, [playClick]);
 
   const handleCloseLightbox = () => {
     setSelectedImage(null);
@@ -905,6 +913,7 @@ const Photography = () => {
           <Lightbox 
             imageUrl={selectedImage.url} 
             onClose={handleCloseLightbox}
+            playClick={playClick}
           />
         )}
       </AnimatePresence>
@@ -917,6 +926,8 @@ const Photography = () => {
       >
         <Link 
           to="/" 
+          onClick={playClick}
+          onMouseEnter={playHover}
           className="flex items-center gap-2 text-emerald-400 hover:text-white transition-colors group"
         >
           <motion.div
