@@ -4,7 +4,8 @@ import { Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import Photography from './components/Photography';
-import Cursor from './components/ui/Cursor';
+import CustomCursor from './components/ui/CustomCursor';
+import KonamiCode from './components/ui/KonamiCode';
 
 function App() {
   const [loading, setLoading] = useState(true);
@@ -89,7 +90,8 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white overflow-x-hidden relative cursor-none">
-      <Cursor />
+      <CustomCursor />
+      <KonamiCode />
       <div className="scanline" />
       <div className="gradient-mesh" />
       
