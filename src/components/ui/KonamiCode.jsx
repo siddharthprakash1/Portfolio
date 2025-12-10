@@ -279,13 +279,12 @@ const KonamiCode = () => {
         )}
       </AnimatePresence>
 
-      {/* Subtle hint in corner (hidden by default, shown on hover) */}
+      {/* Subtle hint in corner - slightly visible, more visible on hover */}
       <motion.div
-        initial={{ opacity: 0 }}
-        whileHover={{ opacity: 1 }}
-        className="fixed bottom-4 left-4 z-50 opacity-0 hover:opacity-100 transition-opacity duration-300"
+        className="fixed bottom-4 left-4 z-50 group cursor-default"
+        whileHover={{ scale: 1.05 }}
       >
-        <span className="text-gray-700 text-xs font-mono cursor-default select-none">
+        <span className="text-gray-600 group-hover:text-emerald-400 text-xs font-mono select-none transition-colors duration-300 opacity-30 group-hover:opacity-100">
           ↑↑↓↓←→←→BA
         </span>
       </motion.div>
