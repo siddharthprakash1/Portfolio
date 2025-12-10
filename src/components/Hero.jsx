@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { FaArrowDown } from 'react-icons/fa';
 import { HiDownload } from 'react-icons/hi';
-import profilePic from "../assets/Sid.jpg";
+import profilePic from "../assets/p1.webp";
 import resumeFile from "../assets/resume.pdf";
 import { useSound } from '../context/SoundContext';
 
