@@ -23,7 +23,7 @@ const projects = [
     description: 'Advanced AI content curation system with 3 specialized CrewAI agents. Auto-discovers, analyzes, and shares GenAI content on Twitter/X.',
     technologies: ['LLaMA3-70B', 'Groq API', 'CrewAI', 'LangChain', 'Serper'],
     color: '#10b981',
-    github: 'https://github.com/siddharthprakash1',
+    github: 'https://github.com/siddharthprakash1/TwitterBot_Newsletter',
   },
   {
     title: 'Neural Nexus: LLM Tournament Framework',
@@ -31,7 +31,7 @@ const projects = [
     description: 'Strategic battle system pitting LLMs against each other in Othello. 95% uptime across 1,000+ test games with 8 model configs.',
     technologies: ['Groq', 'Google AI', 'Claude', 'Game Engine', 'Prompt Engineering'],
     color: '#06b6d4',
-    github: 'https://github.com/siddharthprakash1',
+    github: 'https://github.com/siddharthprakash1/TransformerTournament',
   },
   {
     title: 'Project Gemini-Inbox: Intelligent Gmail Assistant',
@@ -39,7 +39,7 @@ const projects = [
     description: 'AI-powered Gmail assistant using LangChain and Gemini Pro. Automated email management with web search via Serper API.',
     technologies: ['LangChain', 'Gemini Pro', 'Gmail API', 'Google Serper'],
     color: '#8b5cf6',
-    github: 'https://github.com/siddharthprakash1',
+    github: 'https://github.com/siddharthprakash1/Project-Gemini-Inbox',
   },
   {
     title: 'Crypto Insights Dashboard',
@@ -47,7 +47,7 @@ const projects = [
     description: 'Real-time crypto platform integrating 3 major APIs. AI sentiment analysis processing 1000+ daily news articles with 85% accuracy.',
     technologies: ['Flask', 'CryptoCompare', 'Gemini Pro', 'Sentiment Analysis'],
     color: '#f59e0b',
-    github: 'https://github.com/siddharthprakash1',
+    github: 'https://github.com/siddharthprakash1/Crypto-Assisstant',
   },
   {
     title: 'MLTrader Pro: Intelligent Trading Bot',
@@ -55,7 +55,7 @@ const projects = [
     description: 'Automated SPY ETF trading using FinBERT sentiment analysis of financial news. Improved trading accuracy by 40%.',
     technologies: ['FinBERT', 'Alpaca API', 'TensorFlow', 'Yahoo Finance'],
     color: '#ef4444',
-    github: 'https://github.com/siddharthprakash1',
+    github: 'https://github.com/siddharthprakash1/MLTrader',
   },
   {
     title: 'AlgoNavigator: Pathfinding Visualizer',
@@ -63,7 +63,7 @@ const projects = [
     description: 'Interactive visualization tool for Dijkstra\'s and A* algorithms. Real-time grid-based animation for learning DSA.',
     technologies: ['React', 'Algorithms', 'CSS Animations', 'JavaScript'],
     color: '#3b82f6',
-    github: 'https://github.com/siddharthprakash1',
+    github: 'https://github.com/siddharthprakash1/AlgoNavigator',
   },
   {
     title: 'NumGen DCGAN: Digit Synthesis',
@@ -71,7 +71,7 @@ const projects = [
     description: 'Generates realistic handwritten digits using Deep Convolutional GANs on MNIST dataset with visualization.',
     technologies: ['Python', 'TensorFlow', 'DCGAN', 'NumPy'],
     color: '#ec4899',
-    github: 'https://github.com/siddharthprakash1',
+    github: 'https://github.com/siddharthprakash1/NumGen-DCGAN',
   },
   {
     title: 'GymGenie: Equipment Identifier',
@@ -79,7 +79,7 @@ const projects = [
     description: 'Identifies gym equipment with 92% accuracy using CNN and provides personalized exercise recommendations.',
     technologies: ['TensorFlow', 'Computer Vision', 'CNN', 'Manim'],
     color: '#14b8a6',
-    github: 'https://github.com/siddharthprakash1',
+    github: 'https://github.com/siddharthprakash1/GymGenie',
   },
   {
     title: 'ShadowSpeak: Anonymous Chat Platform',
@@ -87,7 +87,7 @@ const projects = [
     description: 'Real-time anonymous messaging app with Socket.IO. Supports both anonymous and named chat modes.',
     technologies: ['Socket.IO', 'JavaScript', 'WebSockets', 'Express'],
     color: '#6366f1',
-    github: 'https://github.com/siddharthprakash1',
+    github: 'https://github.com/siddharthprakash1/ShadowSpeak',
   },
 ];
 
