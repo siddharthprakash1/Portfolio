@@ -55,7 +55,7 @@ const projects = [
     description: 'Automated SPY ETF trading using FinBERT sentiment analysis of financial news. Improved trading accuracy by 40%.',
     technologies: ['FinBERT', 'Alpaca API', 'TensorFlow', 'Yahoo Finance'],
     color: '#ef4444',
-    github: 'https://github.com/siddharthprakash1/MLTrader',
+    github: 'https://github.com/siddharthprakash1/TradingBot_',
   },
   {
     title: 'AlgoNavigator: Pathfinding Visualizer',
@@ -63,7 +63,7 @@ const projects = [
     description: 'Interactive visualization tool for Dijkstra\'s and A* algorithms. Real-time grid-based animation for learning DSA.',
     technologies: ['React', 'Algorithms', 'CSS Animations', 'JavaScript'],
     color: '#3b82f6',
-    github: 'https://github.com/siddharthprakash1/AlgoNavigator',
+    github: 'https://github.com/siddharthprakash1/PathFinderVisualization',
   },
   {
     title: 'NumGen DCGAN: Digit Synthesis',
@@ -71,7 +71,7 @@ const projects = [
     description: 'Generates realistic handwritten digits using Deep Convolutional GANs on MNIST dataset with visualization.',
     technologies: ['Python', 'TensorFlow', 'DCGAN', 'NumPy'],
     color: '#ec4899',
-    github: 'https://github.com/siddharthprakash1/NumGen-DCGAN',
+    github: 'https://github.com/siddharthprakash1/mnist_gan_project',
   },
   {
     title: 'GymGenie: Equipment Identifier',
