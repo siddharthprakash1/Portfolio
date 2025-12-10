@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaGithub, FaLinkedin, FaBars, FaTimes } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaBars, FaTimes, FaVolumeUp, FaVolumeMute } from 'react-icons/fa';
 import { FaXTwitter } from 'react-icons/fa6';
 import { Link, useLocation } from 'react-router-dom';
+import { useSound } from '../context/SoundContext';
 
 const navItems = [
   { id: 'hero', name: 'Home', path: '/' },
@@ -19,6 +20,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero');
   const location = useLocation();
+  const { soundEnabled, toggleSound, playClick, playHover } = useSound();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -44,6 +46,7 @@ const Navbar = () => {
   }, [location]);
 
   const scrollTo = (id, path) => {
+    playClick();
     setMobileMenuOpen(false);
     
     // If it's a hash link and we are on home page, scroll
@@ -90,6 +93,7 @@ const Navbar = () => {
                   key={item.id}
                   to={item.path}
                   onClick={() => scrollTo(item.id, item.path)}
+                  onMouseEnter={playHover}
                   className={`relative text-sm transition-colors uppercase tracking-wider ${
                     (location.pathname === item.path || (location.pathname === '/' && activeSection === item.id)) 
                     ? 'text-emerald-400' 
@@ -115,8 +119,54 @@ const Navbar = () => {
               ))}
             </div>
 
-            {/* Social Links */}
+            {/* Social Links & Sound Toggle */}
             <div className="hidden md:flex items-center gap-3 lg:gap-4">
+              {/* Sound Toggle */}
+              <motion.button
+                onClick={toggleSound}
+                onMouseEnter={playHover}
+                className={`relative w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
+                  soundEnabled ? 'text-emerald-400' : 'text-gray-500'
+                }`}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.4, type: 'spring', stiffness: 200 }}
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+                title={soundEnabled ? 'Sound On' : 'Sound Off'}
+              >
+                <AnimatePresence mode="wait">
+                  {soundEnabled ? (
+                    <motion.div
+                      key="on"
+                      initial={{ scale: 0, rotate: -90 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, rotate: 90 }}
+                    >
+                      <FaVolumeUp size={16} />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="off"
+                      initial={{ scale: 0, rotate: -90 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      exit={{ scale: 0, rotate: 90 }}
+                    >
+                      <FaVolumeMute size={16} />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                {soundEnabled && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full border border-emerald-400/50"
+                    animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
+                )}
+              </motion.button>
+
+              <div className="w-px h-4 bg-white/10" />
+
               {[
                 { icon: FaGithub, href: 'https://github.com/siddharthprakash1', color: '#6e5494' },
                 { icon: FaLinkedin, href: 'https://www.linkedin.com/in/siddharth-prakash-771596241/', color: '#0077B5' },
@@ -127,6 +177,8 @@ const Navbar = () => {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={playClick}
+                  onMouseEnter={playHover}
                   className="text-gray-500 hover:text-emerald-400 transition-colors"
                   initial={{ opacity: 0, scale: 0 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -210,6 +262,18 @@ const Navbar = () => {
                     </motion.span>
                   </Link>
                 ))}
+
+                {/* Sound Toggle - Mobile */}
+                <motion.button
+                  onClick={toggleSound}
+                  className={`flex items-center gap-3 mt-4 ${soundEnabled ? 'text-emerald-400' : 'text-gray-400'}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  {soundEnabled ? <FaVolumeUp size={20} /> : <FaVolumeMute size={20} />}
+                  <span className="text-sm">{soundEnabled ? 'Sound On' : 'Sound Off'}</span>
+                </motion.button>
                 
                 <div className="flex items-center gap-6 mt-8">
                   {[
@@ -222,6 +286,7 @@ const Navbar = () => {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={playClick}
                       className="text-gray-400"
                       initial={{ opacity: 0, scale: 0 }}
                       animate={{ opacity: 1, scale: 1 }}

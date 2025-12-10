@@ -4,11 +4,13 @@ import { FaArrowDown } from 'react-icons/fa';
 import { HiDownload } from 'react-icons/hi';
 import profilePic from "../assets/Sid.jpg";
 import resumeFile from "../assets/resume.pdf";
+import { useSound } from '../context/SoundContext';
 
 import Hero3D from './canvas/Hero3D';
 
 const Hero = () => {
   const containerRef = useRef(null);
+  const { playClick, playHover } = useSound();
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -18,6 +20,7 @@ const Hero = () => {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
   const scrollToProjects = () => {
+    playClick();
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -118,6 +121,7 @@ const Hero = () => {
             >
               <motion.button
                 onClick={scrollToProjects}
+                onMouseEnter={playHover}
                 className="btn-primary"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
@@ -129,6 +133,8 @@ const Hero = () => {
               <motion.a
                 href={resumeFile}
                 download="Siddharth_Prakash_Resume.pdf"
+                onClick={playClick}
+                onMouseEnter={playHover}
                 className="btn-outline"
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
