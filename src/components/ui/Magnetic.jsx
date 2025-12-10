@@ -1,7 +1,7 @@
-import React, { useState, useRef, useEffect } from "react";
-import { motion, useSpring, useMotionValue, useTransform } from "framer-motion";
+import React, { useState, useRef } from "react";
+import { motion } from "framer-motion";
 
-export const Magnetic = ({ children }) => {
+export const Magnetic = ({ children, strength = 0.15 }) => {
   const ref = useRef(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
@@ -10,7 +10,8 @@ export const Magnetic = ({ children }) => {
     const { height, width, left, top } = ref.current.getBoundingClientRect();
     const middleX = clientX - (left + width / 2);
     const middleY = clientY - (top + height / 2);
-    setPosition({ x: middleX, y: middleY });
+    // Apply strength multiplier to reduce the magnetic pull
+    setPosition({ x: middleX * strength, y: middleY * strength });
   };
 
   const reset = () => {
@@ -25,7 +26,7 @@ export const Magnetic = ({ children }) => {
       onMouseMove={handleMouse}
       onMouseLeave={reset}
       animate={{ x, y }}
-      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+      transition={{ type: "spring", stiffness: 350, damping: 25, mass: 0.5 }}
     >
       {children}
     </motion.div>
